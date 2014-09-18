@@ -8,8 +8,8 @@ while 1:
 
 	forward(1, 0.2)
 
-	if (getObstacle("center")>threshold || getObstacle("left")>threshold):
-		while (getObstacle("center")>threshold || getObstacle("left")>threshold):
+	if (getObstacle("center")>threshold or getObstacle("left")>threshold):
+		while (getObstacle("center")>threshold or getObstacle("left")>threshold):
 			turnRight(1, 0.5)
 			forward(1, 0.5)
 			turnLeft(1, 0.5)
