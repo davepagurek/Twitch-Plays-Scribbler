@@ -1,6 +1,21 @@
 from myro import *
 
-initialize("com5")
+init()
 
-#See if it works
-beep(1, 440)
+threshold = 4000
+
+while 1:
+
+	forward(1, 0.2)
+
+	if (getObstacle("center")>threshold || getObstacle("left")>threshold):
+		while (getObstacle("center")>threshold || getObstacle("left")>threshold):
+			turnRight(1, 0.5)
+			forward(1, 0.5)
+			turnLeft(1, 0.5)
+
+	elif (getObstacle("right")>threshold):
+		while (getObstacle("right")>threshold):
+			turnLeft(1, 0.5)
+			forward(1, 0.5)
+			turnRight(1, 0.5)
