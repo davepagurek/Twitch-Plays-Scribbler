@@ -1,34 +1,47 @@
 from myro import *
 
-init()
+init("/dev/rfcomm1")
 # 0-7000 value for proximity of obstacle
-threshold = 1000
+threshold = 100
+setIRPower(135)
+setName("JMBOT")
+forward(1)
 
-setName("JMBOT");
+def getData():
+    left=getObstacle("left")
+    right=getObstacle("right")
+    center=getObstacle("center")
+    return [left,center,right]
+
 while 1:
 
     #starts moving robot forward
-    forward(1)
 
     #Debug
-    print(getObstacle("left") + " " + getObstacle("center") + " " + getObstacle("right") + "\n")
-    
+    objectarray=getData()
+    print str(objectarray[0])+" "+str(objectarray[1])+" "+str(objectarray[2])
     # if the obstacle is left or in the centre, then turn right
-    if (getObstacle("center")>threshold or getObstacle("left")>threshold):
-        while (getObstacle("center")>threshold or getObstacle("left")>threshold):
+    if (objectarray[1]>threshold or objectarray[0]>threshold):
+        while (objectarray[1]>threshold or objectarray[0]>threshold):
             stop()
             turnRight(1, 0.5)
             forward(1, 0.5)
             turnLeft(1, 0.5)
             stop()
-    # if the obstacle is to the right, turn the robot left
-    elif (getObstacle("right")>threshold):
-        while (getObstacle("right")>threshold):
+            objectarray=getData()
+        forward(1)
+  # if the obstacle is to the right, turn the robot left
+    elif (objectarray[2]>threshold):
+        while (objectarray[2]>threshold):
             stop()
+
             turnLeft(1, 0.5)
             forward(1, 0.5)
             turnRight(1, 0.5)
             stop()
+            objectarrgetData()
+        forward(1)
+
 
 
 
@@ -36,3 +49,4 @@ while 1:
 def checkIfObject():
     if(getObstacle("right") > threshold or getObstacle("center") > threshold or getObstacle("left") > threshold):
         return True;
+
