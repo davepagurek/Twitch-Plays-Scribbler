@@ -2,7 +2,7 @@ from myro import *
 
 init()
 # 0-7000 value for proximity of obstacle
-threshold = 4000
+threshold = 1000
 
 setName("JMBOT");
 while 1:
