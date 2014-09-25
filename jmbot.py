@@ -34,5 +34,5 @@ while 1:
 
 # method that can be implemented to check if there is an object
 def checkIfObject():
-    if(getObstacle("right") >threshold or getObstacle("center")>threshold or getObstacle("left")>thresholdr )
+    if(getObstacle("right") > threshold or getObstacle("center") > threshold or getObstacle("left") > threshold):
         return True;
