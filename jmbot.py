@@ -69,3 +69,35 @@ def goAroundObject(direction):
             objectarray=getData()
         forward(1);
 
+#Recursively go around objects to end up on the same path
+def tryForward(time):
+	turnTime = 2
+	step = 0.5
+	obstacles = getData()
+
+	#Go around then come back if there's an obstacle
+	if (isObjectLeft(obstacles)):
+		turnRight(1, turnTime)
+		tryForward(step)
+		turnLeft(1, turnTime)
+		tryForward(time)
+		turnLeft(1, turnTime)
+		tryForward(step)
+		turnRight(1, turnTime)
+	elif (isObjectRight(obstacles)):
+		turnLeft(1, turnTime)
+		tryForward(step)
+		turnRight(1, turnTime)
+		tryForward(step)
+		turnRight(1, turnTime)
+		tryForward(step)
+		turnLeft(1, turnTime)
+	elif (time > step):
+		t=0
+		while (t<time):
+			tryForward(step)
+			t += step
+	else:
+		forward(1)
+		wait(time)
+		
