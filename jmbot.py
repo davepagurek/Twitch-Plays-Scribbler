@@ -6,7 +6,7 @@ threshold = 100
 setIRPower(135)
 setName("JMBOT")
 forward(1)
-
+#returns an list with the proximity values from  IR sensors
 def getData():
     left=getObstacle("left")
     right=getObstacle("right")
@@ -14,39 +14,58 @@ def getData():
     return [left,center,right]
 
 while 1:
-
-    #starts moving robot forward
-
     #Debug
     objectarray=getData()
     print str(objectarray[0])+" "+str(objectarray[1])+" "+str(objectarray[2])
     # if the obstacle is left or in the centre, then turn right
-    if (objectarray[1]>threshold or objectarray[0]>threshold):
-        while (objectarray[1]>threshold or objectarray[0]>threshold):
-            stop()
-            turnRight(1, 0.5)
-            forward(1, 0.5)
-            turnLeft(1, 0.5)
-            stop()
-            objectarray=getData()
-        forward(1)
+    if (isObjectLeft(objectarray)):
+        goAroundObject(1);
   # if the obstacle is to the right, turn the robot left
-    elif (objectarray[2]>threshold):
-        while (objectarray[2]>threshold):
-            stop()
+    elif (isObjectRight(objectarray)):
+        goAroundObject(2);
 
-            turnLeft(1, 0.5)
-            forward(1, 0.5)
-            turnRight(1, 0.5)
-            stop()
-            objectarrgetData()
-        forward(1)
-
+    forward(1)
 
 
 
 # method that can be implemented to check if there is an object
 def checkIfObject():
+    #quick check to see if any object
     if(getObstacle("right") > threshold or getObstacle("center") > threshold or getObstacle("left") > threshold):
         return True;
+def isObjectLeft(objectarray):
+    if(objectarray[1]>threshold or objectarray[0]>threshold):
+        return True;
+    else return False;
+def isObjectRight(objectarray):
+    if(objectarray[2]>threshold):
+        return True;
+    else return False;
+def goAroundObject(direction):
+    rightcount=0;
+    if direction==1:
+        #go right around object
+        while isObjectLeft(objectarray):
+            rightcount++;
+            turnRight(1);
+            objectarray=getData();
+        forward(1);
+        while(rightcount>0):
+            rightcount--;
+            turnLeft(1);
+            objectarray=getData()
+        forward(1);
+    elif direction==2:
+        #go left around object
+        #go right around object
+        while isObjectLeft(objectarray):
+            rightcount++;
+            turnLeft(1);
+            objectarray=getData();
+        forward(1);
+        while(rightcount>0):
+            rightcount--;
+            turnRight(1);
+            objectarray=getData()
+        forward(1);
 
