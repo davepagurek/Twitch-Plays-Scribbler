@@ -6,6 +6,7 @@ threshold = 100
 setIRPower(135)
 setName("JMBOT")
 forward(1)
+turn = 0
 
 def getData():
     left=getObstacle("left")
@@ -25,11 +26,14 @@ while 1:
         while (objectarray[1]>threshold or objectarray[0]>threshold):
             stop()
             turnRight(1, 0.5)
+	    turn++
             forward(1, 0.5)
             turnLeft(1, 0.5)
             stop()
             objectarray=getData()
-        forward(1)
+	turnLeft(1,0.5)
+	while (turn >0):
+	    forward(1)
   # if the obstacle is to the right, turn the robot left
     elif (objectarray[2]>threshold):
         while (objectarray[2]>threshold):
