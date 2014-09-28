@@ -1,6 +1,6 @@
 from myro import *
 
-init("/dev/rfcomm2")
+init("/dev/rfcomm1")
 # 0-7000 value for proximity of obstacle
 objectarray=[0,0,0]
 threshold = 100
@@ -24,7 +24,7 @@ def checkIfObject():
         return True
 
 def isObjectLeft(a):
-    if((a[1]>threshold or a[0]>threshold) and (a[1]>a[2] or a[0]>a[2])):
+    if((a[0]>threshold) and (a[0]>a[2])):
         return True
     else:
         return False
@@ -47,46 +47,40 @@ def getDirection(a):
     #center has most clear path
     elif(a[1]<=a[0] and a[1]<=a[2]):
         return 1;
-def move():
-    rightcount=0
-    a=getData()
-    printData(a)
-    direction=getDirection(a)
-    if direction==0:
-        #go right around object
-        #continues turning until obstacle is no longer in front
-        while (isObjectLeft(a)):
-            ++rightcount
-            turnRight(1)
-            wait(.1)
-            a=getData()
-            printData(a)
-        forward(1)
-        # #course correction
-        # while(rightcount>0):
-        #     turnLeft(1)
-        #     wait(.1)
-        #     --rightcount
-        #      a=getData()
-        # forward(1)
-    elif direction==1:
-        forward(1)
-        a=getData()
-        printData(a)
-    elif direction==2:
-        #go left around object
-        while isObjectLeft(a):
-            ++rightcount
-            turnLeft(1)
-            a=getData()
-            printData(a)
-        forward(1)
-        #course correction
-        # while(rightcount>0):
-        #     turnRight(1)
-        #     --rightcount
-        #     a=getData()
-        forward(1)
+# def move():
+#     rightcount=0
+#     a=getData()
+#     printData(a)
+#     direction=getDirection(a)
+#     if direction==0:
+#         #go right around object
+#         #continues turning until obstacle is no longer in front
+#         while (isObjectLeft(a)):
+#             ++rightcount
+#             turnRight(1)
+#             wait(.1)
+#             a=getData()
+#             printData(a)
+#         forward(1)
+        
+#     elif direction==1:
+#         forward(1)
+#         a=getData()
+#         printData(a)
+#     elif direction==2:
+#         #go left around object
+#         while isObjectLeft(a):
+#             ++rightcount
+#             turnLeft(1)
+#             a=getData()
+#             printData(a)
+#         forward(1)
+#         #course correction
+#         # while(rightcount>0):
+#         #     turnRight(1)
+#         #     --rightcount
+#         #     a=getData()
+#         forward(1)
 
 def tryForward(time, num):
     turnTime = 0.75
@@ -97,13 +91,13 @@ def tryForward(time, num):
 
     #Go around then come back if there's an obstacle
     if (isObjectLeft(obstacles)):
-        print("Cycle: " + str(num) + " (Object to left)")
+        # print("Cycle: " + str(num) + " (Object to left)")
         turnRight(1, turnTime)
         tryForward(side, num+1)
         turnLeft(1, turnTime)
         tryForward(fwd, num+1)
     elif (isObjectRight(obstacles)):
-        print("Cycle: " + str(num) + " (Object to right)")
+        # print("Cycle: " + str(num) + " (Object to right)")
         turnLeft(1, turnTime)
         tryForward(side, num+1)
         turnRight(1, turnTime)
@@ -114,7 +108,7 @@ def tryForward(time, num):
             tryForward(step, num+1)
             t += step
     else:
-        print("Cycle: " + str(num) + " No objects")
+        # print("Cycle: " + str(num) + " No objects")
         forward(1)
         wait(time)
 
