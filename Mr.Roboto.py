@@ -1,4 +1,5 @@
 from myro import *
+import calibration
 init("/dev/rfcomm0")
 threshold=300
 sensordata=[0,0]
