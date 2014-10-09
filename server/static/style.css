@@ -14,7 +14,11 @@ html, body {
 #video {
 	width: 800px;
 	height: 500px;
-	margin: 100px auto;
+	position:absolute;
+  left:50%;
+  top:50%;
+  margin-left:-400px;
+  margin-top:-200px;
 	display:block;
 }
 
@@ -35,6 +39,7 @@ html, body {
 	bottom:200px;
 	background-color:#FFF;
 	overflow-y:scroll;
+  overflow-x:hidden;
 }
 
 #chat {

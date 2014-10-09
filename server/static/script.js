@@ -5,7 +5,10 @@ window.addEventListener("load", function() {
 	var maxChats = 100;
 
 	var sendMessage = function() {
-		socket.emit('command', document.getElementById("message").value);
+		socket.emit('command', {
+			"message": document.getElementById("message").value,
+			"username": document.getElementById("username").value
+		});
 		document.getElementById("message").value="";
 	}
 
@@ -15,18 +18,18 @@ window.addEventListener("load", function() {
 			sendMessage();
 		}
 	});
-	socket.on('command', function(msg) {
+	socket.on('command', function(command) {
 		var m = document.createElement("div");
 		m.className="message";
 
 		var t = document.createElement("div");
 		t.className = "text";
-		t.innerHTML = msg;
+		t.innerHTML = command.message;
 		
 
 		var u = document.createElement("div");
 		u.className="user";
-		u.innerHTML = "Steven";
+		u.innerHTML = command.username;
 
 		m.appendChild(u);
 		m.appendChild(t);
@@ -38,4 +41,15 @@ window.addEventListener("load", function() {
 		log.appendChild(m);
 		log.scrollTop = log.scrollHeight;
 	});
+
+	var tick = 0;
+	var context = document.getElementById("video").getContext("2d");
+	var updateTimer = setInterval(function() {
+		tick++;
+		var img = document.createElement("img");
+		img.src = "stream.jpg?tick=" + tick;
+		img.addEventListener("load", function() {
+			context.drawImage(img, 0, 0);
+		});
+	}, 1000);
 });
