@@ -1,19 +1,32 @@
+var socket = io();
+
 window.addEventListener("load", function() {
 	var log = document.getElementById("log");
 	var maxChats = 100;
 
-	var addMessage = function() {
+	var sendMessage = function() {
+		socket.emit('command', document.getElementById("message").value);
+		document.getElementById("message").value="";
+	}
+
+	document.getElementById("send").addEventListener("click", sendMessage);
+	document.getElementById("message").addEventListener("keyup", function(evt) {
+		if (evt.keyCode == 13) {
+			sendMessage();
+		}
+	});
+	socket.on('command', function(msg) {
 		var m = document.createElement("div");
 		m.className="message";
 
 		var t = document.createElement("div");
 		t.className = "text";
-		t.innerHTML = document.getElementById("message").value;
-		document.getElementById("message").value="";
+		t.innerHTML = m;
+		
 
 		var u = document.createElement("div");
 		u.className="user";
-		u.innerHTML = document.getElementById("username").value;
+		u.innerHTML = "Steven";
 
 		m.appendChild(u);
 		m.appendChild(t);
@@ -24,12 +37,5 @@ window.addEventListener("load", function() {
 
 		log.appendChild(m);
 		log.scrollTop = log.scrollHeight;
-	};
-
-	document.getElementById("send").addEventListener("click", addMessage);
-	document.getElementById("message").addEventListener("keyup", function(evt) {
-		if (evt.keyCode == 13) {
-			addMessage();
-		}
 	});
-})
+});
