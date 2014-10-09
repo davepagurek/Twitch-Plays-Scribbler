@@ -21,7 +21,7 @@ window.addEventListener("load", function() {
 
 		var t = document.createElement("div");
 		t.className = "text";
-		t.innerHTML = m;
+		t.innerHTML = msg;
 		
 
 		var u = document.createElement("div");
