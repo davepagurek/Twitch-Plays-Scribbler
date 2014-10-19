@@ -1,6 +1,6 @@
 from myro import *
 
-init("/dev/rfcomm1")
+init("/dev/rfcomm2")
 # 0-7000 value for proximity of obstacle
 threshold = 100
 setIRPower(135)
@@ -26,7 +26,7 @@ while 1:
         while (objectarray[1]>threshold or objectarray[0]>threshold):
             stop()
             turnRight(1, 0.5)
-	    turn++
+	    turn+=1
             forward(1, 0.5)
             turnLeft(1, 0.5)
             stop()
@@ -53,4 +53,3 @@ while 1:
 def checkIfObject():
     if(getObstacle("right") > threshold or getObstacle("center") > threshold or getObstacle("left") > threshold):
         return True;
-

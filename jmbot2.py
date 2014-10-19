@@ -1,6 +1,6 @@
 from myro import *
 
-init("/dev/rfcomm1")
+init("/dev/rfcomm2")
 # 0-7000 value for proximity of obstacle
 threshold = 100
 cycle = 1
@@ -78,7 +78,7 @@ def move(num):
         avoidanceMode = True
     else:
         avoidanceMode = False
-        
+
     #Go around then come back if there's an obstacle(
     if (avoidanceMode):
         path = getDirection(obstacles)
@@ -88,7 +88,7 @@ def move(num):
             cleared = False
             while not cleared:
             	goAround(2)
-            	steps++
+            	steps+=1
             turnLeft(1, rightTurnTime)
             cleared = False
             while not cleared:
@@ -96,7 +96,7 @@ def move(num):
             turnLeft(1, rightTurnTime)
             while not steps==0:
             	goforward(0.5)
-            	steps--
+            	steps-=1
             turnRight(1, rightTurnTime)
         else:
             print("Cycle: " + str(num) + " (Object to left)")
@@ -104,7 +104,7 @@ def move(num):
             cleared = False
             while not cleared:
             	goAround(0)
-            	steps++
+            	steps+=1
             turnRight(1, rightTurnTime)
             cleared = False
             while not cleared:
@@ -112,11 +112,11 @@ def move(num):
             turnRight(1, rightTurnTime)
             while not steps==0:
             	goforward(0.5)
-            	steps--
+            	steps-=1
             turnLeft(1, rightTurnTime)
-	else:
-		forward(0.5)
-            
+    else:
+      forward(0.5)
+
 def goAround(d):
     forward(0.5)
     if (d==0):
@@ -141,6 +141,3 @@ while 1:
     #move()
     move(cycle)
     #forward(1)
-
-
-
