@@ -42,14 +42,21 @@ window.addEventListener("load", function() {
 		log.scrollTop = log.scrollHeight;
 	});
 
-	var tick = 0;
+	//var tick = 0;
 	var context = document.getElementById("video").getContext("2d");
-	var updateTimer = setInterval(function() {
+	socket.on("photo", function(photo) {
+		var img = new Image();
+		image.src = "data:image/png;base64," + photo;
+		image.onLoad = function() {
+			context.drawImage(image, 0, 0);
+		};
+	});
+	/*var updateTimer = setInterval(function() {
 		tick++;
 		var img = document.createElement("img");
 		img.src = "stream.jpg?tick=" + tick;
 		img.addEventListener("load", function() {
 			context.drawImage(img, 0, 0);
 		});
-	}, 1000);
+	}, 1000);*/
 });
