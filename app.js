@@ -25,7 +25,7 @@ app.get('/', function(req, res){
 
 io.on('connection', function(socket){
     console.log('a user connected');
-    io.emit('command','listening on port '+ process.env.PORT);
+    io.emit('command',{server:"Server",message:'listening on port '+ process.env.PORT});
     socket.on('command', function(msg){
         commandQueue.push(msg);
         console.log(msg);
