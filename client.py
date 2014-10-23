@@ -1,7 +1,6 @@
 from socketio_client import SocketIOClient
-import base64
 
-#socket = SocketIOClient("localhost", 8000)
+socket = SocketIOClient("scribblerplaystwitch.herokuapp.com", 25428)
 
 #from myro import *
 
