@@ -43,7 +43,7 @@ window.addEventListener("load", function() {
 		log.scrollTop = log.scrollHeight;
 	});
 
-	//var tick = 0;
+	//256x192, scaled x3
 	var context = document.getElementById("video").getContext("2d");
 	socket.on("photo", function(photo) {
     console.log(photo);
@@ -51,15 +51,7 @@ window.addEventListener("load", function() {
 		image.src = "data:image/png;base64," + photo;
 		image.onload = function() {
       console.log(image);
-			context.drawImage(image, 0, 0);
+			context.drawImage(image, 0, 0, 512, 384);
 		};
 	});
-	/*var updateTimer = setInterval(function() {
-		tick++;
-		var img = document.createElement("img");
-		img.src = "stream.jpg?tick=" + tick;
-		img.addEventListener("load", function() {
-			context.drawImage(img, 0, 0);
-		});
-	}, 1000);*/
 });
