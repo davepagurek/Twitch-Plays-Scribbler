@@ -90,16 +90,18 @@ def directBot():
       turnLeft(turnspeed, ang_step/angularspeed)
       app_vector.angle -= ang_step
       print ang_step
+    if (ang_vector == 60)
+        break
   #correct back to 90 degrees
-  if (app_vector.angle > 90):
+  if (app_vector.angle == 60):
       if(direction):
-        turnLeft(turnspeed, ang_step/angularspeed)
-        app_vector.angle -= ang_step
+        turnRight(turnspeed, 30/angularspeed)
+        app_vector.angle += 30
         print ang_step
         #if the object is bigger on the right
       else:
-        turnRight(turnspeed, ang_step/angularspeed)
-        app_vector.angle += ang_step
+        turnLeft(turnspeed, 30/angularspeed)
+        app_vector.angle -= ang_step
         print ang_step
   #extra step for error just in case
   else:
@@ -165,7 +167,7 @@ def revert():
   app_vector.magnitude = 0
 
  #function to clear box from the side
- def moveL():
+def moveL():
   cleared = False
   while (not cleared):
     forward(forwardspeed,forwardvalue)
@@ -214,7 +216,7 @@ def move():
     whatDir()
     directBot()
     clearObs()
-    if (app_vector.angle == 90 or app_vector == -90)
+    if (app_vector.angle == 90 or app_vector == -90):
         moveL()
     else:
         revert()
