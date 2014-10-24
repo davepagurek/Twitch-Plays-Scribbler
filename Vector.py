@@ -6,8 +6,8 @@ class Vector:
 			a += 360
 		while (a>360):
 			a -= 360
-		self.angle = a
-		self.magnitude = m
+		self.angle = float(a)
+		self.magnitude = float(m)
 
 	def atan(self, x, y):
 		a = 0
