@@ -2,7 +2,6 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var fs = require('fs');
 var commandQueue = [];
 /*
 function parseCommand(msg){
@@ -22,8 +21,8 @@ app.use(express.static(__dirname + '/static'));
 app.get('/', function(req, res){
   res.sendfile('static/index.html');
 });
-app.get('/port.txt', function(req, res){
-  res.sendfile('/port.txt');
+app.get('/port', function(req, res){
+  res.send(process.env.PORT);
 });
 
 
@@ -39,7 +38,4 @@ io.on('connection', function(socket){
 
 http.listen(process.env.PORT||3000, function(){
     console.log('listening on port '+ process.env.PORT||3000);
-    fs.writeFile('port.txt', process.env.PORT, function(err){
-        console.log('File successfully written! - Check your project directory for the output.json file');
-    })
 });
