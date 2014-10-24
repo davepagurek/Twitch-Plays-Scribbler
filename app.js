@@ -1,7 +1,12 @@
 var express = require('express');
 var app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var http = require('http').createServer(app);
+var io = require('socket.io');
+io = io.listen(http.listen(process.env.PORT||3000, function(){
+  console.log('listening on port '+ process.env.PORT||3000);
+}));
+
+io.settings.log = false;
 
 var commandQueue = [];
 /*
@@ -23,15 +28,19 @@ app.get('/', function(req, res){
   res.sendfile('static/index.html');
 });
 
-io.on('connection', function(socket){
+/*http.listen(process.env.PORT||3000, function(){
+  console.log('listening on port '+ process.env.PORT||3000);
+});*/
+
+io.sockets.on('connection', function(socket){
     console.log('a user connected');
     socket.on('command', function(msg){
         commandQueue.push(msg);
         console.log(msg);
-        io.emit('command', msg);
+        io.sockets.emit('command', msg);
     });
-});
-
-http.listen(process.env.PORT||3000, function(){
-  console.log('listening on port '+ process.env.PORT||3000);
+    socket.on('photo', function(msg){
+        console.log("Photo updated");
+        io.sockets.emit('photo', msg);
+    });
 });

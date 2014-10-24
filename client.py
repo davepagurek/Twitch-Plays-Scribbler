@@ -1,28 +1,28 @@
-from socketio_client import SocketIOClient
+import logging
+logging.basicConfig(level=logging.DEBUG)
+from socketIO_client import SocketIO
 
-socket = SocketIOClient("scribblerplaystwitch.herokuapp.com", 25428)
 
-#from myro import *
+#with SocketIO("scribblerplaystwitch.herokuapp.com", 55552) as socket:
+with SocketIO("localhost", 3000) as socket:
 
-#init("/dev/rfcomm1")
+  #from myro import *
 
-def take_photo():
-	print("pretend we're taking a picture")
-	#picture = takePicture("color")
-	#savePicture(picture, "stream.jpg")
-	image_file = open("stream.jpg", "rb")
-	data = image_file.read()
-	socket.emit("photo", data.encode("base64"))
-	image_file.close()
+  #init("/dev/rfcomm1")
 
-def on_command(*args):
-    print 'Command sent: ', args
-    #do command
-    take_photo()
+  def take_photo():
+    print("pretend we're taking a picture")
+    #picture = takePicture("color")
+    #savePicture(picture, "stream.jpg")
+    image_file = open("static/stream.jpg", "rb")
+    data = image_file.read()
+    socket.emit("photo", data.encode("base64"))
+    image_file.close()
 
-def on_connect():
-    print("opened!")
-    socket.on("command", on_command)
+  def on_command(*args):
+      print 'Command sent: ', args
+      #do command
+      take_photo()
 
-socket.on("connect", on_connect)
-socket.run()
+  socket.on("command", on_command)
+  socket.wait()
