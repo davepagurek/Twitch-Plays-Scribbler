@@ -1,11 +1,13 @@
 from myro import *
 import math
+from Vector import *
+from calibration import *
 init("/dev/rfcomm1")
-threshold=800 #Threshold for sensor to confirm obstacle
+threshold=500 #Threshold for sensor to confirm obstacle
 sensordata=[0,0] #Holds sensor data for obstacles (Left, Right)
 angularspeed=360 #Need to set to calibrated angular speed, value should be degrees/second
-deviation = [0, 0] #Net vector of all the deviations
-app_vector = [0, 0] #Individual vector of a displacement, [angle, steps]
+deviation = Vector(0,0) #Net vector of all the deviations
+app_vector = Vector(0,0) #Individual vector of a displacement, [angle, steps]
 ang_step = 15 #Angular rotation for step in degrees
 cleared = False #Boolean to see if obstacle side is cleared
 direction = True
@@ -76,18 +78,39 @@ def getData():
 
 #makes the bot face a clear path
 def directBot():
-  while(isObject()):
 
+  while(isObject()):
     #if the object is bigger on the left
     if(direction):
       turnRight(turnspeed, ang_step/angularspeed)
-      app_vector[0] += ang_step
+      app_vector.angle += ang_step
       print ang_step
       #if the object is bigger on the right
     else:
       turnLeft(turnspeed, ang_step/angularspeed)
-      app_vector[0] -= ang_step
+      app_vector.angle -= ang_step
       print ang_step
+  #correct back to 90 degrees
+  if (app_vector.angle > 90):
+      if(direction):
+        turnLeft(turnspeed, ang_step/angularspeed)
+        app_vector.angle -= ang_step
+        print ang_step
+        #if the object is bigger on the right
+      else:
+        turnRight(turnspeed, ang_step/angularspeed)
+        app_vector.angle += ang_step
+        print ang_step
+  #extra step for error just in case
+  else:
+      if(direction):
+        turnRight(turnspeed, ang_step/angularspeed)
+        app_vector.angle += ang_step
+        print ang_step
+      else:
+        turnLeft(turnspeed, ang_step/angularspeed)
+        app_vector.angle -= ang_step
+        print ang_step
 
 #makes the bot clear one side of the obstacle
 def clearObs():
@@ -95,7 +118,7 @@ def clearObs():
   cleared = False
   while (not cleared):
     forward(forwardspeed,forwardvalue)
-    app_vector[1] += 0.5
+    app_vector.magnitude += forwardvalue
     #object side is to the left
     if(direction):
       turnLeft(turnspeed, 90/angularspeed)
@@ -110,46 +133,91 @@ def clearObs():
       turnLeft(turnspeed, 90/angularspeed)
   print "cleared obstacle"
   forward (forwardspeed, forwardvalue)
-  app_vector[1] += 0.5
+  app_vector.magnitude += forwardvalue
   if(direction):
-    turnLeft(turnspeed, app_vector[0]/angularspeed)
+    turnLeft(turnspeed, app_vector.angle/angularspeed)
   else:
-    turnRight(turnspeed, -app_vector[0]/angularspeed)
+    turnRight(turnspeed, -app_vector.angle/angularspeed)
 
 #corrects any displacement performed by the bot
 def revert():
-  if(app_vector[1]>0):
-    if app_vector[0]>0:
-      turnLeft(turnspeed, app_vector[0]/angularspeed)
-    else:
-      turnRight(turnspeed, -app_vector[0]/angularspeed)
-    forward(forwardspeed, app_vector[1])
-  if app_vector[0]>0:
-    turnRight(turnspeed, app_vector[0]/angularspeed)
+  #set deviation vector to the complimentary angle
+  if app_vector.angle>0:
+    deviation.angle = 90 - app_vector.angle
   else:
-    turnLeft(turnspeed, -app_vector[0]/angularspeed)
-  app_vector[0] = 0.0
-  app_vector[1] = 0.0
+    deviation.angle = - 90 + app_vector.angle
+  #set deviation vector to the corresponding magnitude
+  deviation.magnitude = app_vector.magnitude*math.cos((app_vector.angle/180)*math.pi)/math.cos((deviation.angle/180)*math.pi)
+  #turn to deviation angle
+  if deviation.angle>0:
+    turnLeft(turnspeed, deviation.angle/angularspeed)
+  else:
+    turnRight(turnspeed, -deviation.angle/angularspeed)
+  #moves in the deviation vector and resets all vectors
+  forward(forwardspeed, deviation.magnitude)
+  if deviation.angle>0:
+    turnRight(turnspeed, deviation.angle/angularspeed)
+  else:
+    turnLeft(turnspeed, -deviation.angle/angularspeed)
+  deviation.angle = 0
+  deviation.magnitude = 0
+  app_vector.angle = 0
+  app_vector.magnitude = 0
 
-def turnParallel():
+ #function to clear box from the side
+ def moveL():
+  cleared = False
+  while (not cleared):
+    forward(forwardspeed,forwardvalue)
+    #object side is to the left
+    if(direction):
+      turnLeft(turnspeed, 90/angularspeed)
+      if (not isObject()):
+        cleared = True
+      turnRight(turnspeed, 90/angularspeed)
+    #object side is to the right
+    else:
+      turnRight(turnspeed, 90/angularspeed)
+      if (not isObject()):
+        cleared = True
+      turnLeft(turnspeed, 90/angularspeed)
+  forward (forwardspeed, forwardvalue)
+  if(direction):
+    turnLeft(turnspeed, app_vector.angle/angularspeed)
+  else:
+    turnRight(turnspeed, -app_vector.angle/angularspeed)
+  forward (forwardspeed, app_vector.magnitude)
+  #return forward
+  if(direction):
+    turnRight(turnspeed, app_vector.angle/angularspeed)
+  else:
+    turnLeft(turnspeed, -app_vector.angle/angularspeed)
+  app_vector.angle = 0
+  app_vector.magnitude =0
+
+'''def turnParallel():
   i = 0
   distance_array = []
   while i<=720:
     getData()
-    distance_array.push((i,sensordata[0]+sensordata[1]))
+    #distance_array.push((i,sensordata[0]+sensordata[1]))
     i+=5
   max_val_1 = max(lis[0:360],key=lambda item:item[1])
   max_val_2 = max(lis[360:720],key=lambda item:item[1])
   print (max_val_1)
-  print (max_val_2)
+  print (max_val_2)'''
 
 #main loop of function to run bot
 def move():
-  turnParallel()
+  #turnParallel()
   if(isObject()):
+    whatDir()
     directBot()
     clearObs()
-    revert()
+    if (app_vector.angle == 90 or app_vector == -90)
+        moveL()
+    else:
+        revert()
   else:
     forward()
 
