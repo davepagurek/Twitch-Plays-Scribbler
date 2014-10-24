@@ -3,7 +3,7 @@ import math
 from Vector import *
 from calibration import *
 init("/dev/rfcomm1")
-threshold=500 #Threshold for sensor to confirm obstacle
+threshold=550 #Threshold for sensor to confirm obstacle
 sensordata=[0,0] #Holds sensor data for obstacles (Left, Right)
 angularspeed=360 #Need to set to calibrated angular speed, value should be degrees/second
 deviation = Vector(0,0) #Net vector of all the deviations
@@ -57,6 +57,15 @@ def isObject():
   else:
     return False
 
+def onBorder():
+  getData()
+  print sensordata
+  if(sensordata[0]>threshold and sensordata[1]>threshold):
+    print "saw obstacle"
+    return True
+  else:
+    return False
+
 #return True if the object is bigger to the left or False if to the right
 def whatDir():
   if(sensordata[0]>sensordata[1]):
@@ -90,18 +99,18 @@ def directBot():
       turnLeft(turnspeed, ang_step/angularspeed)
       app_vector.angle -= ang_step
       print ang_step
-    if (ang_vector == 60)
+    if (app_vector.angle == 60):
         break
   #correct back to 90 degrees
   if (app_vector.angle == 60):
       if(direction):
-        turnRight(turnspeed, 30/angularspeed)
-        app_vector.angle += 30
+        turnRight(turnspeed, 60/angularspeed)
+        app_vector.angle += 60
         print ang_step
         #if the object is bigger on the right
       else:
-        turnLeft(turnspeed, 30/angularspeed)
-        app_vector.angle -= ang_step
+        turnLeft(turnspeed, 60/angularspeed)
+        app_vector.angle -= 60
         print ang_step
   #extra step for error just in case
   else:
@@ -124,13 +133,13 @@ def clearObs():
     #object side is to the left
     if(direction):
       turnLeft(turnspeed, 90/angularspeed)
-      if (not isObject()):
+      if (not onBorder()):
         cleared = True
       turnRight(turnspeed, 90/angularspeed)
     #object side is to the right
     else:
       turnRight(turnspeed, 90/angularspeed)
-      if (not isObject()):
+      if (not onBorder()):
         cleared = True
       turnLeft(turnspeed, 90/angularspeed)
   print "cleared obstacle"
@@ -149,7 +158,7 @@ def revert():
   else:
     deviation.angle = - 90 + app_vector.angle
   #set deviation vector to the corresponding magnitude
-  deviation.magnitude = app_vector.magnitude*math.cos((app_vector.angle/180)*math.pi)/math.cos((deviation.angle/180)*math.pi)
+  deviation.magnitude = app_vector.magnitude*math.cos((deviation.angle/180)*math.pi)/math.cos((app_vector.angle/180)*math.pi)
   #turn to deviation angle
   if deviation.angle>0:
     turnLeft(turnspeed, deviation.angle/angularspeed)
@@ -169,18 +178,19 @@ def revert():
  #function to clear box from the side
 def moveL():
   cleared = False
+  forward(forwardspeed, 2)
   while (not cleared):
     forward(forwardspeed,forwardvalue)
     #object side is to the left
     if(direction):
       turnLeft(turnspeed, 90/angularspeed)
-      if (not isObject()):
+      if (not onBorder()):
         cleared = True
       turnRight(turnspeed, 90/angularspeed)
     #object side is to the right
     else:
       turnRight(turnspeed, 90/angularspeed)
-      if (not isObject()):
+      if (not onBorder()):
         cleared = True
       turnLeft(turnspeed, 90/angularspeed)
   forward (forwardspeed, forwardvalue)
