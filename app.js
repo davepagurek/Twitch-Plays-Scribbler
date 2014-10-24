@@ -10,7 +10,7 @@ io.settings.log = false;
 var commandQueue = [];
 
 function parseCommand(msg){
-    var command = msg.command.toLowerCase().split(" "); //split the message
+    var command = msg.message.toLowerCase().split(" "); //split the message
     var operator = command[0]; //First word of the command
     switch(msg.operator){
             case "forward":
