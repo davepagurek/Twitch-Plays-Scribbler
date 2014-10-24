@@ -56,8 +56,9 @@ io.sockets.on('connection', function(socket){
     console.log('a user connected');
     io.emit('command',{username:"Server",message:'listening on port '+ process.env.PORT});
     socket.on('command', function(msg){
-        parseCommand(msg)
         console.log(msg);
+
+        parseCommand(msg);
         io.sockets.emit('command', msg);
     });
     socket.on('photo', function(msg){
