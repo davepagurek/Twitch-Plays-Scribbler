@@ -34,6 +34,7 @@ app.get('/', function(req, res){
 
 io.sockets.on('connection', function(socket){
     console.log('a user connected');
+    io.emit('command',{username:"Server",message:'listening on port '+ process.env.PORT});
     socket.on('command', function(msg){
         commandQueue.push(msg);
         console.log(msg);
