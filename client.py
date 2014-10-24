@@ -1,10 +1,14 @@
 import logging
+import urllib
 logging.basicConfig(level=logging.DEBUG)
 from socketIO_client import SocketIO
 
+portPage = urllib.urlopen("http://scribblerplaystwitch.herokuapp.com/port")
+port = int(portPage.readline() )
 
-#with SocketIO("scribblerplaystwitch.herokuapp.com", 55552) as socket:
-with SocketIO("localhost", 3000) as socket:
+print port;
+
+with SocketIO("scribblerplaystwitch.herokuapp.com", port) as socket:
 
   #from myro import *
 
