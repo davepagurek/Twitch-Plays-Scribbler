@@ -1,11 +1,15 @@
 from myro import *
 import math
+from Vector import *
+from calibration import *
 init("/dev/rfcomm1")
 threshold=800 #Threshold for sensor to confirm obstacle
 sensordata=[0,0] #Holds sensor data for obstacles (Left, Right)
 angularspeed=360 #Need to set to calibrated angular speed, value should be degrees/second
-deviation = [0, 0] #Net vector of all the deviations
-app_vector = [0, 0] #Individual vector of a displacement, [angle, steps]
+#deviation = [0, 0] #Net vector of all the deviations
+deviation =  Vector(0, 0)
+#app_vector = [0, 0] #Individual vector of a displacement, [angle, steps]
+app_vector = Vector(0, 0)
 ang_step = 15 #Angular rotation for step in degrees
 cleared = False #Boolean to see if obstacle side is cleared
 direction = True
@@ -14,36 +18,7 @@ forwardvalue=1
 forwardspeed=0.5
 turnspeed=0.5
 
-import time
-import sys
-import select
-import tty
-import termios
-import threading, time
-def calibrate():
-    old_settings = termios.tcgetattr(sys.stdin)
-    try:
-        tty.setcbreak(sys.stdin.fileno())
 
-        start = time.time()
-        thread = threading.Thread(target=turn).start()
-
-        while 1:
-          if isData():
-            c = sys.stdin.read(1)
-            if c == '\x1b':         # x1b is ESC
-              stop()
-              end = time.time()
-              break
-
-    finally:
-      termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
-      return 360/(end - start)
-def turn():
-    turnRight(turnspeed)
-
-def isData():
-    return select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], [])
 
 # returns true if sensors detect an object greater than a threshold
 def isObject():
@@ -81,12 +56,12 @@ def directBot():
     #if the object is bigger on the left
     if(direction):
       turnRight(turnspeed, ang_step/angularspeed)
-      app_vector[0] += ang_step
+      app_vector.angle += ang_step
       print ang_step
       #if the object is bigger on the right
     else:
       turnLeft(turnspeed, ang_step/angularspeed)
-      app_vector[0] -= ang_step
+      app_vector.angle -= ang_step
       print ang_step
 
 #makes the bot clear one side of the obstacle
@@ -95,7 +70,7 @@ def clearObs():
   cleared = False
   while (not cleared):
     forward(forwardspeed,forwardvalue)
-    app_vector[1] += 0.5
+    app_vector.magnitude += 0.5
     #object side is to the left
     if(direction):
       turnLeft(turnspeed, 90/angularspeed)
@@ -110,26 +85,27 @@ def clearObs():
       turnLeft(turnspeed, 90/angularspeed)
   print "cleared obstacle"
   forward (forwardspeed, forwardvalue)
-  app_vector[1] += 0.5
+  app_vector.magnitude += 0.5
   if(direction):
-    turnLeft(turnspeed, app_vector[0]/angularspeed)
+    turnLeft(turnspeed, app_vector.angle/angularspeed)
   else:
-    turnRight(turnspeed, -app_vector[0]/angularspeed)
+    turnRight(turnspeed, -app_vector.angle/angularspeed)
 
 #corrects any displacement performed by the bot
 def revert():
-  if(app_vector[1]>0):
-    if app_vector[0]>0:
-      turnLeft(turnspeed, app_vector[0]/angularspeed)
+  if(app_vector.magnitude>0):
+    if app_vector.angle>0:
+      turnLeft(turnspeed, app_vector.angle/angularspeed)
     else:
-      turnRight(turnspeed, -app_vector[0]/angularspeed)
-    forward(forwardspeed, app_vector[1])
-  if app_vector[0]>0:
-    turnRight(turnspeed, app_vector[0]/angularspeed)
+      turnRight(turnspeed, -app_vector.angle/angularspeed)
+    forward(forwardspeed, app_vector.magnitude)
+  if app_vector.angle>0:
+    turnRight(turnspeed, app_vector.angle/angularspeed)
   else:
-    turnLeft(turnspeed, -app_vector[0]/angularspeed)
-  app_vector[0] = 0.0
-  app_vector[1] = 0.0
+    turnLeft(turnspeed, -app_vector.angle/angularspeed)
+  deviation.add(app_vector)
+  app_vector.angle = 0.0
+  app_vector.magnitude = 0.0
 
 #main loop of function to run bot
 def move():
