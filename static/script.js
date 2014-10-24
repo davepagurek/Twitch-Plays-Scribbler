@@ -1,4 +1,4 @@
-var socket = io();
+var socket = io.connect();
 
 window.addEventListener("load", function() {
 	var log = document.getElementById("log");
@@ -19,6 +19,7 @@ window.addEventListener("load", function() {
 		}
 	});
 	socket.on('command', function(command) {
+    console.log(command);
 		var m = document.createElement("div");
 		m.className="message";
 
@@ -45,9 +46,11 @@ window.addEventListener("load", function() {
 	//var tick = 0;
 	var context = document.getElementById("video").getContext("2d");
 	socket.on("photo", function(photo) {
-		var img = new Image();
+    console.log(photo);
+		var image = new Image();
 		image.src = "data:image/png;base64," + photo;
-		image.onLoad = function() {
+		image.onload = function() {
+      console.log(image);
 			context.drawImage(image, 0, 0);
 		};
 	});
