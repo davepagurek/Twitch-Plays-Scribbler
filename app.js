@@ -8,14 +8,29 @@ io = io.listen(http.listen(process.env.PORT||3000, function(){
 
 io.settings.log = false;
 var commandQueue = [];
-/*
+
 function parseCommand(msg){
     var command = msg.toLowerCase().split(" "); //split the message
     var operator = command[0]; //First word of the command
-    switch(msg):
-            case(operator=="move"):
+    switch(msg.operator){
+            case("forward"):
 
-} */
+              break;
+            case ("backward"):
+
+              break;
+            case ("left"):
+
+              break;
+            case ("right"):
+
+              break;
+            case("pic"):
+              
+              break;
+            case
+    }
+}
 
 
 // New call to compress content
