@@ -47,4 +47,7 @@ io.sockets.on('connection', function(socket){
         console.log("Photo updated");
         io.sockets.emit('photo', msg);
     });
+    socket.on('selected', function(msg){
+        io.sockets.emit('selected', msg);
+    });
 });

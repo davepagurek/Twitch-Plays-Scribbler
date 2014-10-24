@@ -43,6 +43,25 @@ window.addEventListener("load", function() {
 		log.scrollTop = log.scrollHeight;
 	});
 
+  socket.on('selected', function(command) {
+    console.log(command);
+		var m = document.createElement("div");
+		m.className="message";
+
+		var t = document.createElement("div");
+		t.className = "selected";
+		t.innerHTML = "Moved " + command.message + " , thanks to " + command.username;
+
+		m.appendChild(t);
+
+		while (log.childNodes.length>maxChats) {
+			log.removeChild(log.firstChild);
+		}
+
+		log.appendChild(m);
+		log.scrollTop = log.scrollHeight;
+	});
+
 	//256x192, scaled x3
 	var context = document.getElementById("video").getContext("2d");
 	socket.on("photo", function(photo) {
