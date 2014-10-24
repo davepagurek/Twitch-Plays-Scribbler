@@ -13,22 +13,24 @@ function parseCommand(msg){
     var command = msg.toLowerCase().split(" "); //split the message
     var operator = command[0]; //First word of the command
     switch(msg.operator){
-            case("forward"):
+            case "forward":
+              io.sockets.emit('hasselhoff', "forward");
 
               break;
-            case ("backward"):
+            case "backward":
+              io.sockets.emit('hasselhoff', "backward");
 
               break;
-            case ("left"):
+            case "left":
+                io.sockets.emit('hasselhoff',"left")
+              break;
+            case "right":
+                  io.sockets.emit('hasselhoff',"right")
 
               break;
-            case ("right"):
-
-              break;
-            case("pic"):
-              
-              break;
-            case
+            case "hasselhoff":
+                  io.sockets.emit('hasselhoff',"right")
+            break;
     }
 }
 
@@ -54,7 +56,7 @@ io.sockets.on('connection', function(socket){
     console.log('a user connected');
     io.emit('command',{username:"Server",message:'listening on port '+ process.env.PORT});
     socket.on('command', function(msg){
-        commandQueue.push(msg);
+        parseCommand(msg)
         console.log(msg);
         io.sockets.emit('command', msg);
     });
