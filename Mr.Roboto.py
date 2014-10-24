@@ -131,6 +131,14 @@ def revert():
   app_vector[0] = 0.0
   app_vector[1] = 0.0
 
+def turnParallel():
+  i = 0
+  distance_array = []
+  while i<=720:
+    getData()
+    distance_array.push((i,sensordata[0]+sensordata[1]))
+    i+=5
+
 #main loop of function to run bot
 def move():
   if(isObject()):
