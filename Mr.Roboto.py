@@ -1,12 +1,14 @@
 from myro import *
 import math
+from Vector import *
+from calibration import *
 init("/dev/rfcomm1")
-threshold=800 #Threshold for sensor to confirm obstacle
+threshold=500 #Threshold for sensor to confirm obstacle
 sensordata=[0,0] #Holds sensor data for obstacles (Left, Right)
 angularspeed=360 #Need to set to calibrated angular speed, value should be degrees/second
 deviation = [0, 0] #Net vector of all the deviations
 app_vector = [0, 0] #Individual vector of a displacement, [angle, steps]
-ang_step = 15 #Angular rotation for step in degrees
+ang_step = 20 #Angular rotation for step in degrees
 cleared = False #Boolean to see if obstacle side is cleared
 direction = True
 setIRPower(135)
@@ -76,6 +78,7 @@ def getData():
 
 #makes the bot face a clear path
 def directBot():
+
   while(isObject()):
 
     #if the object is bigger on the left
@@ -88,6 +91,16 @@ def directBot():
       turnLeft(turnspeed, ang_step/angularspeed)
       app_vector[0] -= ang_step
       print ang_step
+  #if the object is bigger on the left
+  if(direction):
+    turnRight(turnspeed, ang_step/angularspeed)
+    app_vector[0] += ang_step
+    print ang_step
+    #if the object is bigger on the right
+  else:
+    turnLeft(turnspeed, ang_step/angularspeed)
+    app_vector[0] -= ang_step
+    print ang_step
 
 #makes the bot clear one side of the obstacle
 def clearObs():
@@ -110,7 +123,7 @@ def clearObs():
       turnLeft(turnspeed, 90/angularspeed)
   print "cleared obstacle"
   forward (forwardspeed, forwardvalue)
-  app_vector[1] += 0.5
+  app_vector[1] += forwardvalue
   if(direction):
     turnLeft(turnspeed, app_vector[0]/angularspeed)
   else:
@@ -123,7 +136,7 @@ def revert():
       turnLeft(turnspeed, app_vector[0]/angularspeed)
     else:
       turnRight(turnspeed, -app_vector[0]/angularspeed)
-    forward(forwardspeed, app_vector[1])
+    forward(forwardspeed, app_vector[1]*1.5)
   if app_vector[0]>0:
     turnRight(turnspeed, app_vector[0]/angularspeed)
   else:
@@ -131,22 +144,23 @@ def revert():
   app_vector[0] = 0.0
   app_vector[1] = 0.0
 
-def turnParallel():
+'''def turnParallel():
   i = 0
   distance_array = []
   while i<=720:
     getData()
-    distance_array.push((i,sensordata[0]+sensordata[1]))
+    #distance_array.push((i,sensordata[0]+sensordata[1]))
     i+=5
   max_val_1 = max(lis[0:360],key=lambda item:item[1])
   max_val_2 = max(lis[360:720],key=lambda item:item[1])
   print (max_val_1)
-  print (max_val_2)
+  print (max_val_2)'''
 
 #main loop of function to run bot
 def move():
-  turnParallel()
+  #turnParallel()
   if(isObject()):
+    whatDir()
     directBot()
     clearObs()
     revert()
