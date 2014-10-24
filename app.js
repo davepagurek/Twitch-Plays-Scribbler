@@ -14,22 +14,22 @@ function parseCommand(msg){
     var operator = command[0]; //First word of the command
     switch(msg.operator){
             case "forward":
-              io.sockets.emit('hasselhoff', "forward");
+              io.sockets.emit('hasselhoff', {'message':"forward",'username':msg.username});
 
               break;
             case "backward":
-              io.sockets.emit('hasselhoff', "backward");
+              io.sockets.emit('hasselhoff', {'message':"backward",'username':msg.username});
 
               break;
             case "left":
-                io.sockets.emit('hasselhoff',"left")
+                io.sockets.emit('hasselhoff',{'message':"left",'username'msg.username});
               break;
             case "right":
-                  io.sockets.emit('hasselhoff',"right")
+                  io.sockets.emit('hasselhoff',{'message':"right",'username':msg.username});
 
               break;
             case "hasselhoff":
-                  io.sockets.emit('hasselhoff',"right")
+                  io.sockets.emit('hasselhoff',{'message':"right",'username':msg.username});
             break;
     }
 }
