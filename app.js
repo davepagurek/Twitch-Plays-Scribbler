@@ -22,6 +22,10 @@ app.use(express.static(__dirname + '/static'));
 app.get('/', function(req, res){
   res.sendfile('static/index.html');
 });
+app.get('/port.txt', function(req, res){
+  res.sendfile('/port.txt');
+});
+
 
 io.on('connection', function(socket){
     console.log('a user connected');
@@ -34,5 +38,8 @@ io.on('connection', function(socket){
 });
 
 http.listen(process.env.PORT||3000, function(){
-  console.log('listening on port '+ process.env.PORT||3000);
+    console.log('listening on port '+ process.env.PORT||3000);
+    fs.writeFile('port.txt', process.env.PORT, function(err){
+        console.log('File successfully written! - Check your project directory for the output.json file');
+    })
 });
