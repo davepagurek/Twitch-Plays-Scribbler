@@ -8,14 +8,31 @@ io = io.listen(http.listen(process.env.PORT||3000, function(){
 
 io.settings.log = false;
 var commandQueue = [];
-/*
-function parseCommand(msg){
-    var command = msg.toLowerCase().split(" "); //split the message
-    var operator = command[0]; //First word of the command
-    switch(msg):
-            case(operator=="move"):
 
-} */
+function parseCommand(msg){
+    var command = msg.message.toLowerCase().split(" "); //split the message
+    var operator = command[0]; //First word of the command
+    switch(msg.operator){
+            case "forward":
+              io.sockets.emit('hasselhoff', {'message':"forward",'username':msg.username});
+
+              break;
+            case "backward":
+              io.sockets.emit('hasselhoff', {'message':"backward",'username':msg.username});
+
+              break;
+            case "left":
+                io.sockets.emit('hasselhoff',{'message':"left",'username':msg.username});
+              break;
+            case "right":
+                  io.sockets.emit('hasselhoff',{'message':"right",'username':msg.username});
+
+              break;
+            case "hasselhoff":
+                  io.sockets.emit('hasselhoff',{'message':"right",'username':msg.username});
+            break;
+    }
+}
 
 
 // New call to compress content
@@ -39,8 +56,9 @@ io.sockets.on('connection', function(socket){
     console.log('a user connected');
     io.emit('command',{username:"Server",message:'listening on port '+ process.env.PORT});
     socket.on('command', function(msg){
-        commandQueue.push(msg);
         console.log(msg);
+
+        parseCommand(msg);
         io.sockets.emit('command', msg);
     });
     socket.on('photo', function(msg){
