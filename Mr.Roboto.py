@@ -124,21 +124,28 @@ def directBot():
         turnLeft(turnspeed, ang_step/angularspeed)
         app_vector.angle -= ang_step
         print ang_step"""
-  forward(forwardspeed, 0.5)
-  while(isObject()):
+  if(direction==True):
+    turnRight(turnspeed, ang_step/angularspeed)
+    app_vector.angle += ang_step
+    print ang_step
+  else:
+    turnLeft(turnspeed, ang_step/angularspeed)
+    app_vector.angle -= ang_step
+    print ang_step
+  forward(forwardspeed, 1)
+  if(isObject()):
     #if the object is bigger on the left
     print direction
+    backward(forwardspeed, 1)
     if(direction==True):
-      turnRight(turnspeed, ang_step/angularspeed)
-      app_vector.angle += ang_step
-      print ang_step
+      turnRight(turnspeed, (90-app_vector.angle)/angularspeed)
+      app_vector.angle += 90-app_vector.angle
       #if the object is bigger on the right
     else:
-      turnLeft(turnspeed, ang_step/angularspeed)
-      app_vector.angle -= ang_step
-      print ang_step
-    if (app_vector.angle == 75):
-        break
+      turnLeft(turnspeed, (90+app_vector.angle)/angularspeed)
+      app_vector.angle -= (90+app_vector.angle)
+  else:
+      backward(forwardspeed, 1)
   """if(direction==True):
     turnRight(turnspeed, ang_step/angularspeed)
     app_vector.angle += ang_step
