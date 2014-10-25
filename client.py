@@ -2,6 +2,7 @@ import logging
 import json
 import threading
 import sched, time
+import song
 logging.basicConfig(level=logging.WARNING)
 from socketIO_client import SocketIO
 
@@ -45,7 +46,7 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
       elif(command=="left"):
         turnLeft(1,1)
       elif(command=="beep"):
-        beep(10, 87.31)
+        song()
       elif(command=="hasselhoff"):
         speak("Im hooked on a feeling")
       take_photo()
