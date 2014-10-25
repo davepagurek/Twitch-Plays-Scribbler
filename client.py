@@ -45,7 +45,7 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
       elif(command=="left"):
         turnLeft(1,1)
       elif(command=="beep"):
-        beep(self, 1, 87.31)
+        beep(1, 87.31)
       elif(command=="hasselhoff"):
         speak("Im hooked on a feeling")
       take_photo()
