@@ -6,16 +6,17 @@ window.addEventListener("load", function() {
 
 	var sendMessage = function() {
 		socket.emit('command', {
-			"message": document.getElementById("message").value,
+			"message": document.getElementById("message").value.replace(/\n$/, ""),
 			"username": document.getElementById("username").value
 		});
 		document.getElementById("message").value="";
 	}
 
 	document.getElementById("send").addEventListener("click", sendMessage);
-	document.getElementById("message").addEventListener("keyup", function(evt) {
+	document.getElementById("message").addEventListener("keydown", function(evt) {
 		if (evt.keyCode == 13) {
 			sendMessage();
+      return false;
 		}
 	});
 	socket.on('command', function(command) {
