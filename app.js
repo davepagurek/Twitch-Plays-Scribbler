@@ -32,6 +32,9 @@ function parseCommand(msg){
             case "hasselhoff":
                   io.sockets.emit('hasselhoff',{'message':"right",'username':msg.username});
             break;
+            case "help":
+                  io.emit('command',{username:"Server",message:"Welcome! Here's the command listing"});
+            break;
     }
 }
 
@@ -57,6 +60,7 @@ io.sockets.on('connection', function(socket){
     //emit last photo if any
     io.sockets.emit('photo', last_pic);
     console.log('a user connected');
+
     io.emit('command',{username:"Server",message:'listening on port '+ process.env.PORT});
     socket.on('command', function(msg){
         console.log(msg);
