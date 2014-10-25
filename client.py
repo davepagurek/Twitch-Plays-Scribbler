@@ -62,7 +62,7 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
     image_file.close()
 
   def valid_command(command):
-    if (command=="forward" or command=="backward" or command=="right" or command=="left" or command=="hasselhoff"):
+    if (command=="forward" or command=="backward" or command=="right" or command=="left" or command=="hasselhoff" or command=="beep"):
       return True
     else:
       return False
