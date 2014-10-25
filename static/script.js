@@ -3,12 +3,20 @@ var socket = io.connect();
 window.addEventListener("load", function() {
 	var log = document.getElementById("log");
 	var maxChats = 100;
+  
+  var previous = [];
+  var current = 0;
 
 	var sendMessage = function() {
 		socket.emit('command', {
 			"message": document.getElementById("message").value.replace(/\n$/, ""),
 			"username": document.getElementById("username").value
 		});
+    previous.push(document.getElementById("message").value.replace(/\n$/, ""));
+    while (previous.length>maxChats) {
+      previous.shift();
+    }
+    current = previous.length;
 		document.getElementById("message").value="";
 	}
 
@@ -17,7 +25,17 @@ window.addEventListener("load", function() {
 		if (evt.keyCode == 13) {
 			sendMessage();
       return false;
-		}
+		} else if (evt.keyCode == 38 && current-1>=0 && (current<previous.length || document.getElementById("message").value=="")) {
+      current--;
+      document.getElementById("message").value = previous[current];
+    } else if (evt.keyCode == 40 && current+1<=previous.length) {
+      current++;
+      if (current==previous.length) {
+        document.getElementById("message").value = "";
+      } else {
+        document.getElementById("message").value = previous[current];
+      }
+    }
 	});
 	socket.on('command', function(command) {
     console.log(command);
