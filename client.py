@@ -13,6 +13,8 @@ init("/dev/rfcomm1")
 with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
 
   def check_ready():
+    global ready
+    global s
     if (ready):
       apply_command()
     else:
@@ -20,26 +22,29 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
       s.run()
 
   def apply_command():
+    global queue
+    global s
+    global ready
     ready = False
-    selected = random.choice(queue)
-    queue = []
-    command = selected["message"]
-    user = selected["username"]
-    if(command=="forward"):
-      forward(1,1)
-    elif(command=="backward"):
-      backward(1,1)
-    elif(command=="right"):
-      turnRight(1,1)
-    elif(command=="left"):
-      turnLeft(1,1)
-    elif(command=="hasselhoff"):
-      speak("Im hooked on a feeling")
-    take_photo()
-    socket.emit("selected", {'username': username, 'message': command})
-    ready = True
-    s.enter(0.1, 1, check_ready, ())
-    s.run()
+    if len(queue)>0:
+      selected = queue.pop(0)
+      command = selected["message"]
+      username = selected["username"]
+      if(command=="forward"):
+        forward(1,1)
+      elif(command=="backward"):
+        backward(1,1)
+      elif(command=="right"):
+        turnRight(1,1)
+      elif(command=="left"):
+        turnLeft(1,1)
+      elif(command=="hasselhoff"):
+        speak("Im hooked on a feeling")
+      take_photo()
+      socket.emit("selected", {'username': username, 'message': command})
+      ready = True
+      s.enter(0.1, 1, check_ready, ())
+      s.run()
 
   def take_photo():
     print("pretend we're taking a picture")
@@ -51,6 +56,8 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
     image_file.close()
 
   def on_command(*args):
+    global queue
+    global ready
     #print 'Command sent: ', args
     #do command
     #print "\n\n\n\n"

@@ -68,6 +68,7 @@ def onBorder():
 
 #return True if the object is bigger to the left or False if to the right
 def whatDir():
+  global direction
   if(sensordata[0]>sensordata[1]):
     direction= True
     print "object to left"
@@ -87,10 +88,11 @@ def getData():
 
 #makes the bot face a clear path
 def directBot():
-
-  while(onBorder()):
+  global direction
+  while(isObject()):
     #if the object is bigger on the left
-    if(direction):
+    print direction
+    if(direction==True):
       turnRight(turnspeed, ang_step/angularspeed)
       app_vector.angle += ang_step
       print ang_step
@@ -103,7 +105,7 @@ def directBot():
         break
   #correct back to 90 degrees
   """if (app_vector.angle == 75):
-      if(direction):
+      if(direction==True):
         turnRight(turnspeed, 30/angularspeed)
         app_vector.angle += 30
         print ang_step
@@ -114,7 +116,7 @@ def directBot():
         print ang_step
   #extra step for error just in case
   else:
-      if(direction):
+      if(direction==True):
         turnRight(turnspeed, ang_step/angularspeed)
         app_vector.angle += ang_step
         print ang_step
@@ -122,7 +124,7 @@ def directBot():
         turnLeft(turnspeed, ang_step/angularspeed)
         app_vector.angle -= ang_step
         print ang_step"""
-  if(direction):
+  if(direction==True):
     turnRight(turnspeed, ang_step/angularspeed)
     app_vector.angle += ang_step
     print ang_step
@@ -133,13 +135,14 @@ def directBot():
 
 #makes the bot clear one side of the obstacle
 def clearObs():
+  global direction
   print "clearing obstacle"
   cleared = False
   while (not cleared):
     forward(forwardspeed,forwardvalue)
     app_vector.magnitude += forwardvalue
     #object side is to the left
-    if(direction):
+    if(direction==True):
       turnLeft(turnspeed, 90/angularspeed)
       if (not onBorder()):
         cleared = True
@@ -153,27 +156,29 @@ def clearObs():
   print "cleared obstacle"
   forward (forwardspeed, forwardvalue)
   app_vector.magnitude += forwardvalue
-  if(direction):
+  if(direction==True):
     turnLeft(turnspeed, app_vector.angle/angularspeed)
   else:
     turnRight(turnspeed, -app_vector.angle/angularspeed)
 
 #corrects any displacement performed by the bot
 def revert():
+  global direction
   #set deviation vector to the complimentary angle
   if app_vector.angle>0:
     deviation.angle = 90 - app_vector.angle
   else:
-    deviation.angle = - 90 + app_vector.angle
+    deviation.angle = - 90 - app_vector.angle
   #set deviation vector to the corresponding magnitude
-  deviation.magnitude = app_vector.magnitude*math.cos((deviation.angle/180)*math.pi)/math.cos((app_vector.angle/180)*math.pi)
+  deviation.magnitude = math.fabs(app_vector.magnitude*math.cos((deviation.angle/180)*math.pi)/math.cos((app_vector.angle/180)*math.pi))
   #turn to deviation angle
   if deviation.angle>0:
     turnLeft(turnspeed, deviation.angle/angularspeed)
   else:
     turnRight(turnspeed, -deviation.angle/angularspeed)
   #moves in the deviation vector and resets all vectors
-  forward(forwardspeed, deviation.magnitude)
+  print deviation.magnitude,"\n\n\n", forwardspeed
+  forward(forwardspeed, int(deviation.magnitude))
   if deviation.angle>0:
     turnRight(turnspeed, deviation.angle/angularspeed)
   else:
@@ -185,12 +190,13 @@ def revert():
 
  #function to clear box from the side
 def moveL():
+  global direction
   cleared = False
   forward(forwardspeed, 2)
   while (not cleared):
     forward(forwardspeed,forwardvalue)
     #object side is to the left
-    if(direction):
+    if(direction==True):
       turnLeft(turnspeed, 90/angularspeed)
       if (not onBorder()):
         cleared = True
@@ -202,13 +208,13 @@ def moveL():
         cleared = True
       turnLeft(turnspeed, 90/angularspeed)
   forward (forwardspeed, forwardvalue)
-  if(direction):
+  if(direction==True):
     turnLeft(turnspeed, app_vector.angle/angularspeed)
   else:
     turnRight(turnspeed, -app_vector.angle/angularspeed)
   forward (forwardspeed, app_vector.magnitude)
   #return forward
-  if(direction):
+  if(direction==True):
     turnRight(turnspeed, app_vector.angle/angularspeed)
   else:
     turnLeft(turnspeed, -app_vector.angle/angularspeed)
@@ -229,9 +235,11 @@ def moveL():
 
 #main loop of function to run bot
 def move():
+  global direction
   #turnParallel()
   if(isObject()):
     whatDir()
+    print direction
     directBot()
     clearObs()
     if (app_vector.angle == 90 or app_vector == -90):
