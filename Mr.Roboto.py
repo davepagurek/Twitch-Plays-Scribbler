@@ -11,6 +11,7 @@ app_vector = Vector(0,0) #Individual vector of a displacement, [angle, steps]
 ang_step = 15 #Angular rotation for step in degrees
 cleared = False #Boolean to see if obstacle side is cleared
 direction = True
+perpendicular = False
 setIRPower(135)
 forwardvalue=1
 forwardspeed=0.5
@@ -89,20 +90,58 @@ def getData():
 #makes the bot face a clear path
 def directBot():
   global direction
-  while(isObject()):
-    #if the object is bigger on the left
-    print direction
+  perpendicular = True
+  turnLeft(turnspeed, 90/angularspeed)
+  if (isObject()):
+    perpendicular = False
+    turnRight(turnspeed, 90/angularspeed)
+  else:
+    forward(forwardspeed, 0.5)
+    turnRight(turnspeed, 90/angularspeed)
+    if not (isObject()):
+      perpendicular = False
+      turnRight(turnspeed, 90/angularspeed)
+      forward(forwardspeed, 0.5)
+      turnLeft(turnspeed, 90/angularspeed)
+    else:
+      turnRight(turnspeed, 90/angularspeed)
+      forward(forwardspeed, 1.0)
+      turnLeft(turnspeed, 90/angularspeed)
+      if not (isObject()):
+        perpendicular = False
+      turnLeft(turnspeed, 90/angularspeed)
+      forward(forwardspeed, 0.5)
+      turnRight(turnspeed, 90/angularspeed)
+  if (perpendicular):
+    if (direction):
+      turnRight(turnspeed, 90/angularspeed)
+      app_vector.angle += 90
+      print 90
+    else:
+      turnLeft(turnspeed, 90/angularspeed)
+      app_vector.angle -= 90
+      print -90
+  else:
+    while(isObject()):
+      #if the object is bigger on the left
+      print direction
+      if(direction==True):
+        turnRight(turnspeed, ang_step/angularspeed)
+        app_vector.angle += ang_step
+        print ang_step
+        #if the object is bigger on the right
+      else:
+        turnLeft(turnspeed, ang_step/angularspeed)
+        app_vector.angle -= ang_step
+        print ang_step
     if(direction==True):
       turnRight(turnspeed, ang_step/angularspeed)
       app_vector.angle += ang_step
       print ang_step
-      #if the object is bigger on the right
     else:
       turnLeft(turnspeed, ang_step/angularspeed)
       app_vector.angle -= ang_step
       print ang_step
-    if (app_vector.angle == 75):
-        break
   #correct back to 90 degrees
   """if (app_vector.angle == 75):
       if(direction==True):
@@ -124,15 +163,7 @@ def directBot():
         turnLeft(turnspeed, ang_step/angularspeed)
         app_vector.angle -= ang_step
         print ang_step"""
-  if(direction==True):
-    turnRight(turnspeed, ang_step/angularspeed)
-    app_vector.angle += ang_step
-    print ang_step
-  else:
-    turnLeft(turnspeed, ang_step/angularspeed)
-    app_vector.angle -= ang_step
-    print ang_step
-  forward(forwardspeed, 1)
+  """forward(forwardspeed, 1)
   if(isObject()):
     #if the object is bigger on the left
     print direction
@@ -145,7 +176,7 @@ def directBot():
       turnLeft(turnspeed, (90+app_vector.angle)/angularspeed)
       app_vector.angle -= (90+app_vector.angle)
   else:
-      backward(forwardspeed, 1)
+      backward(forwardspeed, 1)"""
   """if(direction==True):
     turnRight(turnspeed, ang_step/angularspeed)
     app_vector.angle += ang_step
