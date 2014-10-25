@@ -31,9 +31,9 @@ function parseCommand(msg){
               break;
             case "hasselhoff":
                   io.sockets.emit('hasselhoff',{'message':"right",'username':msg.username});
-            break;
+              break;
             case "help":
-                  io.emit('command',{'username':"Server",'message':"Welcome! Here's the command listing"});
+                  io.sockets.emit('command',{'username':"Server",'message':"Welcome! Here's the command listing"});
             break;
     }
 }
