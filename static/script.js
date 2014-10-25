@@ -13,7 +13,7 @@ window.addEventListener("load", function() {
 	}
 
 	document.getElementById("send").addEventListener("click", sendMessage);
-	document.getElementById("message").addEventListener("keydown", function(evt) {
+	document.getElementById("message").addEventListener("keyup", function(evt) {
 		if (evt.keyCode == 13) {
 			sendMessage();
       return false;
