@@ -3,7 +3,7 @@ import math
 from Vector import *
 from calibration import *
 init("/dev/rfcomm1")
-threshold=550 #Threshold for sensor to confirm obstacle
+threshold=630 #Threshold for sensor to confirm obstacle
 sensordata=[0,0] #Holds sensor data for obstacles (Left, Right)
 angularspeed=360 #Need to set to calibrated angular speed, value should be degrees/second
 deviation = Vector(0,0) #Net vector of all the deviations
@@ -13,7 +13,7 @@ cleared = False #Boolean to see if obstacle side is cleared
 direction = True
 perpendicular = False
 setIRPower(135)
-forwardvalue=1
+forwardvalue=1.25
 forwardspeed=0.5
 turnspeed=0.5
 
@@ -61,11 +61,11 @@ def isObject():
 def onBorder():
   getData()
   print sensordata
-  if(sensordata[0]>threshold and sensordata[1]>threshold):
-    print "saw obstacle"
-    return True
-  else:
+  if(sensordata[0]==0 or sensordata[1]==0):
+    print "On a border"
     return False
+  else:
+    return True
 
 #return True if the object is bigger to the left or False if to the right
 def whatDir():
@@ -96,22 +96,27 @@ def directBot():
     perpendicular = False
     turnRight(turnspeed, 90/angularspeed)
   else:
-    forward(forwardspeed, 0.5)
+    forward(forwardspeed, 1.0)
     turnRight(turnspeed, 90/angularspeed)
     if not (isObject()):
       perpendicular = False
       turnRight(turnspeed, 90/angularspeed)
-      forward(forwardspeed, 0.5)
+      forward(forwardspeed, 1.0)
       turnLeft(turnspeed, 90/angularspeed)
     else:
       turnRight(turnspeed, 90/angularspeed)
       forward(forwardspeed, 1.0)
-      turnLeft(turnspeed, 90/angularspeed)
-      if not (isObject()):
+      if (isObject()):
         perpendicular = False
-      turnLeft(turnspeed, 90/angularspeed)
-      forward(forwardspeed, 0.5)
-      turnRight(turnspeed, 90/angularspeed)
+        turnLeft(turnspeed, 90/angularspeed)
+      else:
+        forward(forwardspeed, 1.0)
+        turnLeft(turnspeed, 90/angularspeed)
+        if not (isObject()):
+          perpendicular = False
+        turnLeft(turnspeed, 90/angularspeed)
+        forward(forwardspeed, 1.0)
+        turnRight(turnspeed, 90/angularspeed)
   if (perpendicular):
     if (direction):
       turnRight(turnspeed, 90/angularspeed)
@@ -291,18 +296,24 @@ def move():
   global direction
   #turnParallel()
   if(isObject()):
+    speak("they see me rolling")
     whatDir()
     print direction
+    speak("they hating")
     directBot()
     clearObs()
-    if (app_vector.angle == 90 or app_vector == -90):
+    print app_vector.angle
+    if (app_vector.angle > 80.0 or app_vector.angle < -80.0):
         moveL()
     else:
         revert()
+    speak("ya bitch")
   else:
     forward()
 
 
+
 angularspeed=calibrate()
+speak("3 60 no scope, boom headshot")
 while (1):
   move()
