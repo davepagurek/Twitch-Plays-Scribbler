@@ -8,6 +8,7 @@ io = io.listen(http.listen(process.env.PORT||3000, function(){
 
 io.settings.log = false;
 var commandQueue = [];
+var last_pic;
 
 function parseCommand(msg){
     var command = msg.message.toLowerCase().split(" "); //split the message
@@ -53,7 +54,6 @@ app.get('/port', function(req, res){
 });*/
 
 io.sockets.on('connection', function(socket){
-    var last_pic;
     //emit last photo if any
     io.sockets.emit('photo', last_pic);
     console.log('a user connected');
