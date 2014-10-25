@@ -124,14 +124,29 @@ def directBot():
         turnLeft(turnspeed, ang_step/angularspeed)
         app_vector.angle -= ang_step
         print ang_step"""
-  if(direction==True):
+  forward(forwardspeed, 0.5)
+  while(isObject()):
+    #if the object is bigger on the left
+    print direction
+    if(direction==True):
+      turnRight(turnspeed, ang_step/angularspeed)
+      app_vector.angle += ang_step
+      print ang_step
+      #if the object is bigger on the right
+    else:
+      turnLeft(turnspeed, ang_step/angularspeed)
+      app_vector.angle -= ang_step
+      print ang_step
+    if (app_vector.angle == 75):
+        break
+  """if(direction==True):
     turnRight(turnspeed, ang_step/angularspeed)
     app_vector.angle += ang_step
     print ang_step
   else:
     turnLeft(turnspeed, ang_step/angularspeed)
     app_vector.angle -= ang_step
-    print ang_step
+    print ang_step"""
 
 #makes the bot clear one side of the obstacle
 def clearObs():
