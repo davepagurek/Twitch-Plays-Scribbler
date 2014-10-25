@@ -21,21 +21,21 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
   def on_command(*args):
       print 'Command sent: ', args
       #do command
-      print args[0]
-      print args[1]
-      command=args[0]
+      print "\n\n\n\n"
+      command=args[0]["message"]
+      print command
+      print "\n\n\n\n\n"
       if(command=="forward"):
-          forward(1)
+          forward(1,1)
       elif(command=="backward"):
-          backward(1)
+          backward(1,1)
       elif(command=="right"):
           turnRight(1,1)
       elif(command=="left"):
           turnLeft(1,1)
       elif(command=="hasselhoff"):
           speak("Im hooked on a feeling")
-      socket.emit("selected",dict(username=))
+      take_photo()
+      #socket.emit("selected",dict(username=))
   socket.on("command", on_command)
   socket.wait()
-  def switchCommand(command):
-    switch
