@@ -53,6 +53,9 @@ app.get('/port', function(req, res){
 });*/
 
 io.sockets.on('connection', function(socket){
+    var last_pic;
+    //emit last photo if any
+    io.sockets.emit('photo', last_pic);
     console.log('a user connected');
     io.emit('command',{username:"Server",message:'listening on port '+ process.env.PORT});
     socket.on('command', function(msg){
@@ -64,6 +67,7 @@ io.sockets.on('connection', function(socket){
     socket.on('photo', function(msg){
         console.log("Photo updated");
         io.sockets.emit('photo', msg);
+        last_pic = msg;
     });
     socket.on('selected', function(msg){
         io.sockets.emit('selected', msg);
