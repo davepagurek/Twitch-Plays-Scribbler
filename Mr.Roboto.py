@@ -54,27 +54,9 @@ def isData():
 
 #tells the robot what type of obstacle avoidance to use (perpendicular or angled)
 def set_state():
-    temp = 0
-    old_settings = termios.tcgetattr(sys.stdin)
-    try:
-        tty.setcbreak(sys.stdin.fileno())
-        thread = threading.Thread(target=wait).start()
-        while 1:
-          if isData():
-            c = sys.stdin.read(1)
-            # Perpendicular avoidance
-            if c == '\x1bOP':         # x1b is F1
-              stop()
-              temp = 1
-              break
-            # Angled avoidance
-            if c == '\x1bOQ':         # x1b is F2
-              stop()
-              temp = 2
-              break
-    finally:
-      termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
-      return temp
+    temp = input("Enter Mode. 1 for perpendicular. 2 for angled")
+    if(not(temp == "1" or temp == "2")) return 0
+    return temp
 
 #returns true if sensors detect an object greater than a threshold
 def isObject():
