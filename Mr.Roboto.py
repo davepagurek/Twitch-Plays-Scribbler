@@ -11,11 +11,12 @@ app_vector = Vector(0,0) #Individual vector of a displacement, [angle, steps]
 ang_step = 15 #Angular rotation for step in degrees
 cleared = False #Boolean to see if obstacle side is cleared
 direction = True
-perpendicular = False
+#perpendicular = False
 setIRPower(135)
 forwardvalue=1.25
 forwardspeed=0.5
 turnspeed=0.5
+state = 0
 
 import time
 import sys
@@ -23,6 +24,8 @@ import select
 import tty
 import termios
 import threading, time
+
+#calibrate the turnspeed of the robot by seeing how long it takes to turn 360 degrees
 def calibrate():
     old_settings = termios.tcgetattr(sys.stdin)
     try:
@@ -42,22 +45,48 @@ def calibrate():
     finally:
       termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
       return 360/(end - start)
+
 def turn():
     turnRight(turnspeed)
 
 def isData():
     return select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], [])
 
-# returns true if sensors detect an object greater than a threshold
+#tells the robot what type of obstacle avoidance to use (perpendicular or angled)
+def set_state():
+    temp = 0
+    old_settings = termios.tcgetattr(sys.stdin)
+    try:
+        tty.setcbreak(sys.stdin.fileno())
+        thread = threading.Thread(target=wait).start()
+        while 1:
+          if isData():
+            c = sys.stdin.read(1)
+            # Perpendicular avoidance
+            if c == '\x1bOP':         # x1b is F1
+              stop()
+              temp = 1
+              break
+            # Angled avoidance
+            if c == '\x1bOQ':         # x1b is F2
+              stop()
+              temp = 2
+              break
+    finally:
+      termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
+      return temp
+
+#returns true if sensors detect an object greater than a threshold
 def isObject():
   getData()
   print sensordata
   if(sensordata[0]>threshold or sensordata[1]>threshold or sensordata[2]>threshold):
-    print "saw obstacle"
+    print "Saw obstacle"
     return True
   else:
     return False
 
+#returns true if one of the sensors (left/right) returns a 0 (meaning it's clear or on a border)
 def onBorder():
   getData()
   print sensordata
@@ -77,7 +106,7 @@ def whatDir():
     direction= False
     print "object to right"
 
-#sets the static sensordata variable to the current obstacle values
+#sets the static sensordata variable to the current obstacle values, takes an average of 3 data sets
 def getData():
   a=0
   b=0
@@ -93,40 +122,42 @@ def getData():
 #makes the bot face a clear path
 def directBot():
   global direction
-  global perpendicular
-  perpendicular = False
-  forward(forwardspeed, 0.3)
-  #if not (sensordata[2] - sensordata[1] > 300 and sensordata[2] - sensordata[0] > 300):
-  perpendicular = True
-  turnLeft(turnspeed, 90/angularspeed)
-  if (isObject()):
-    perpendicular = False
-    turnRight(turnspeed, 90/angularspeed)
-  else:
-    forward(forwardspeed, 0.5)
-    turnRight(turnspeed, 90/angularspeed)
-    if not (isObject()):
-      perpendicular = False
-      turnRight(turnspeed, 90/angularspeed)
-      forward(forwardspeed, 0.5)
-      turnLeft(turnspeed, 90/angularspeed)
-    else:
-      turnRight(turnspeed, 90/angularspeed)
-      forward(forwardspeed, 0.5)
-      if (isObject()):
-        perpendicular = False
-        turnLeft(turnspeed, 90/angularspeed)
-      else:
-        forward(forwardspeed, 0.5)
-        turnLeft(turnspeed, 90/angularspeed)
-        if not (isObject()):
-          perpendicular = False
-        turnLeft(turnspeed, 90/angularspeed)
-        forward(forwardspeed, 0.5)
-        turnRight(turnspeed, 90/angularspeed)
+  global state
+  #global perpendicular
+  # #gets a bit closer to sense object better
+  # forward(forwardspeed, 0.3)
+  # perpendicular = True
+  # turnLeft(turnspeed, 90/angularspeed)
+  # if (isObject()):
+  #   perpendicular = False
+  #   turnRight(turnspeed, 90/angularspeed)
+  # else:
+  #   forward(forwardspeed, 0.5)
+  #   turnRight(turnspeed, 90/angularspeed)
+  #   if not (isObject()):
+  #     perpendicular = False
+  #     turnRight(turnspeed, 90/angularspeed)
+  #     forward(forwardspeed, 0.5)
+  #     turnLeft(turnspeed, 90/angularspeed)
+  #   else:
+  #     turnRight(turnspeed, 90/angularspeed)
+  #     forward(forwardspeed, 0.5)
+  #     if (isObject()):
+  #       perpendicular = False
+  #       turnLeft(turnspeed, 90/angularspeed)
+  #     else:
+  #       forward(forwardspeed, 0.5)
+  #       turnLeft(turnspeed, 90/angularspeed)
+  #       if not (isObject()):
+  #         perpendicular = False
+  #       turnLeft(turnspeed, 90/angularspeed)
+  #       forward(forwardspeed, 0.5)
+  #       turnRight(turnspeed, 90/angularspeed)
   #else:
 #      forward(forwardspeed, 0.3)
-  if (perpendicular):
+
+  #Perpendicular direction
+  if (state == 1):
     if (direction):
       turnRight(turnspeed, 90/angularspeed)
       app_vector.angle += 90
@@ -135,7 +166,9 @@ def directBot():
       turnLeft(turnspeed, 90/angularspeed)
       app_vector.angle -= 90
       print -90
+  #Angular direction
   else:
+    #turn until no object in path
     while(isObject()):
       #if the object is bigger on the left
       print direction
@@ -148,67 +181,27 @@ def directBot():
         turnLeft(turnspeed, ang_step/angularspeed)
         app_vector.angle -= ang_step
         print ang_step
+    #Plus one more for safety
     if(direction==True):
       turnRight(turnspeed, ang_step/angularspeed)
       app_vector.angle += ang_step
       print ang_step
-      print "AND AGAIN"
+      print "Last turn"
     else:
       turnLeft(turnspeed, ang_step/angularspeed)
       app_vector.angle -= ang_step
       print ang_step
-      print "AND AGAIN"
-  #correct back to 90 degrees
-  """if (app_vector.angle == 75):
-      if(direction==True):
-        turnRight(turnspeed, 30/angularspeed)
-        app_vector.angle += 30
-        print ang_step
-        #if the object is bigger on the right
-      else:
-        turnLeft(turnspeed, 30/angularspeed)
-        app_vector.angle -= 30
-        print ang_step
-  #extra step for error just in case
-  else:
-      if(direction==True):
-        turnRight(turnspeed, ang_step/angularspeed)
-        app_vector.angle += ang_step
-        print ang_step
-      else:
-        turnLeft(turnspeed, ang_step/angularspeed)
-        app_vector.angle -= ang_step
-        print ang_step"""
-  """forward(forwardspeed, 1)
-  if(isObject()):
-    #if the object is bigger on the left
-    print direction
-    backward(forwardspeed, 1)
-    if(direction==True):
-      turnRight(turnspeed, (90-app_vector.angle)/angularspeed)
-      app_vector.angle += 90-app_vector.angle
-      #if the object is bigger on the right
-    else:
-      turnLeft(turnspeed, (90+app_vector.angle)/angularspeed)
-      app_vector.angle -= (90+app_vector.angle)
-  else:
-      backward(forwardspeed, 1)"""
-  """if(direction==True):
-    turnRight(turnspeed, ang_step/angularspeed)
-    app_vector.angle += ang_step
-    print ang_step
-  else:
-    turnLeft(turnspeed, ang_step/angularspeed)
-    app_vector.angle -= ang_step
-    print ang_step"""
+      print "Last turn"
 
 #makes the bot clear one side of the obstacle
 def clearObs():
   global direction
   print "clearing obstacle"
   cleared = False
+  #move forward in case too far from obstacle
   forward(forwardspeed, 1.0)
   app_vector.magnitude += 1.0
+  #move forward while check to clear obstacle
   while (not cleared):
     forward(forwardspeed,forwardvalue)
     app_vector.magnitude += forwardvalue
@@ -235,14 +228,14 @@ def clearObs():
 #corrects any displacement performed by the bot
 def revert():
   global direction
-  global perpendicular
+  global state
   #set deviation vector to the complimentary angle
   if app_vector.angle>0:
     deviation.angle = 90 - app_vector.angle
   else:
     deviation.angle = - 90 - app_vector.angle
   #set deviation vector to the corresponding magnitude
-  if (perpendicular):
+  if (state == 1):
     deviation.magnitude = app_vector.magnitude
   else:
     deviation.magnitude = math.fabs(app_vector.magnitude*math.cos((deviation.angle/180)*math.pi)/math.cos((app_vector.angle/180)*math.pi))
@@ -263,11 +256,13 @@ def revert():
   app_vector.angle = 0
   app_vector.magnitude = 0
 
- #function to clear box from the side
+ #perpendicular avoidance clearing side of box
 def moveL():
   global direction
   cleared = False
+  #move forward in case box is too far
   forward(forwardspeed, 2)
+  #move forward until box is cleared
   while (not cleared):
     forward(forwardspeed,forwardvalue)
     #object side is to the left
@@ -287,6 +282,7 @@ def moveL():
     turnLeft(turnspeed, app_vector.angle/angularspeed)
   else:
     turnRight(turnspeed, -app_vector.angle/angularspeed)
+  #return to the main axis by reverting the change, reset vectors
   forward (forwardspeed, app_vector.magnitude)
   #return forward
   if(direction==True):
@@ -296,22 +292,9 @@ def moveL():
   app_vector.angle = 0
   app_vector.magnitude =0
 
-'''def turnParallel():
-  i = 0
-  distance_array = []
-  while i<=720:
-    getData()
-    #distance_array.push((i,sensordata[0]+sensordata[1]))
-    i+=5
-  max_val_1 = max(lis[0:360],key=lambda item:item[1])
-  max_val_2 = max(lis[360:720],key=lambda item:item[1])
-  print (max_val_1)
-  print (max_val_2)'''
-
 #main loop of function to run bot
 def move():
   global direction
-  #turnParallel()
   if(isObject()):
     whatDir()
     print direction
@@ -322,13 +305,10 @@ def move():
         moveL()
     else:
         revert()
-    speak("ya ye female dog mate")
   else:
     forward(1, 0.25)
 
-
-
 angularspeed=calibrate()
-speak("3 60 no scope")
+state = set_state()
 while (1):
   move()
