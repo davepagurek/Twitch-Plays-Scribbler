@@ -1,4 +1,4 @@
-from Myro import *
+from myro import *
 class audiojm():
     B0  = 31
     C1  = 33
@@ -97,7 +97,7 @@ class audiojm():
     def playNoteDictionary(self,melody, harmony):
         currentMelody = None
         currentHarmony = None
-        arpLength = 0.05
+        arpLength = 0.1
         while (len(melody)>0 or len(harmony)>0):
             if (len(harmony)==0 and (not currentHarmony or currentHarmony.played>=currentHarmony.duration)):
                 currentMelody = melody.pop(0)

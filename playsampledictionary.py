@@ -1,4 +1,4 @@
-from Myro import *
+from myro import *
 init("/dev/rfcomm1")
 from audiojm import *
 j=audiojm()

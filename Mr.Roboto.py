@@ -3,8 +3,8 @@ import math
 from Vector import *
 from calibration import *
 init("/dev/rfcomm1")
-threshold=630 #Threshold for sensor to confirm obstacle
-sensordata=[0,0] #Holds sensor data for obstacles (Left, Right)
+threshold=660 #Threshold for sensor to confirm obstacle
+sensordata=[0,0,0] #Holds sensor data for obstacles (Left, Right)
 angularspeed=360 #Need to set to calibrated angular speed, value should be degrees/second
 deviation = Vector(0,0) #Net vector of all the deviations
 app_vector = Vector(0,0) #Individual vector of a displacement, [angle, steps]
@@ -52,7 +52,7 @@ def isData():
 def isObject():
   getData()
   print sensordata
-  if(sensordata[0]>threshold or sensordata[1]>threshold):
+  if(sensordata[0]>threshold or sensordata[1]>threshold or sensordata[2]>threshold):
     print "saw obstacle"
     return True
   else:
@@ -81,42 +81,51 @@ def whatDir():
 def getData():
   a=0
   b=0
+  c=0
   for x in range (3):
     a+=getObstacle("left")
     b+=getObstacle("right")
+    c+=getObstacle("center")
   sensordata[0]=a/3
   sensordata[1]=b/3
+  sensordata[2]=c/3
 
 #makes the bot face a clear path
 def directBot():
   global direction
+  global perpendicular
+  perpendicular = False
+  forward(forwardspeed, 0.3)
+  #if not (sensordata[2] - sensordata[1] > 300 and sensordata[2] - sensordata[0] > 300):
   perpendicular = True
   turnLeft(turnspeed, 90/angularspeed)
   if (isObject()):
     perpendicular = False
     turnRight(turnspeed, 90/angularspeed)
   else:
-    forward(forwardspeed, 1.0)
+    forward(forwardspeed, 0.5)
     turnRight(turnspeed, 90/angularspeed)
     if not (isObject()):
       perpendicular = False
       turnRight(turnspeed, 90/angularspeed)
-      forward(forwardspeed, 1.0)
+      forward(forwardspeed, 0.5)
       turnLeft(turnspeed, 90/angularspeed)
     else:
       turnRight(turnspeed, 90/angularspeed)
-      forward(forwardspeed, 1.0)
+      forward(forwardspeed, 0.5)
       if (isObject()):
         perpendicular = False
         turnLeft(turnspeed, 90/angularspeed)
       else:
-        forward(forwardspeed, 1.0)
+        forward(forwardspeed, 0.5)
         turnLeft(turnspeed, 90/angularspeed)
         if not (isObject()):
           perpendicular = False
         turnLeft(turnspeed, 90/angularspeed)
-        forward(forwardspeed, 1.0)
+        forward(forwardspeed, 0.5)
         turnRight(turnspeed, 90/angularspeed)
+  #else:
+#      forward(forwardspeed, 0.3)
   if (perpendicular):
     if (direction):
       turnRight(turnspeed, 90/angularspeed)
@@ -143,10 +152,12 @@ def directBot():
       turnRight(turnspeed, ang_step/angularspeed)
       app_vector.angle += ang_step
       print ang_step
+      print "AND AGAIN"
     else:
       turnLeft(turnspeed, ang_step/angularspeed)
       app_vector.angle -= ang_step
       print ang_step
+      print "AND AGAIN"
   #correct back to 90 degrees
   """if (app_vector.angle == 75):
       if(direction==True):
@@ -196,6 +207,8 @@ def clearObs():
   global direction
   print "clearing obstacle"
   cleared = False
+  forward(forwardspeed, 1.0)
+  app_vector.magnitude += 1.0
   while (not cleared):
     forward(forwardspeed,forwardvalue)
     app_vector.magnitude += forwardvalue
@@ -222,13 +235,17 @@ def clearObs():
 #corrects any displacement performed by the bot
 def revert():
   global direction
+  global perpendicular
   #set deviation vector to the complimentary angle
   if app_vector.angle>0:
     deviation.angle = 90 - app_vector.angle
   else:
     deviation.angle = - 90 - app_vector.angle
   #set deviation vector to the corresponding magnitude
-  deviation.magnitude = math.fabs(app_vector.magnitude*math.cos((deviation.angle/180)*math.pi)/math.cos((app_vector.angle/180)*math.pi))
+  if (perpendicular):
+    deviation.magnitude = app_vector.magnitude
+  else:
+    deviation.magnitude = math.fabs(app_vector.magnitude*math.cos((deviation.angle/180)*math.pi)/math.cos((app_vector.angle/180)*math.pi))
   #turn to deviation angle
   if deviation.angle>0:
     turnLeft(turnspeed, deviation.angle/angularspeed)
@@ -296,10 +313,8 @@ def move():
   global direction
   #turnParallel()
   if(isObject()):
-    speak("they see me rolling")
     whatDir()
     print direction
-    speak("they hating")
     directBot()
     clearObs()
     print app_vector.angle
@@ -307,13 +322,13 @@ def move():
         moveL()
     else:
         revert()
-    speak("ya bitch")
+    speak("ya ye female dog mate")
   else:
-    forward()
+    forward(1, 0.25)
 
 
 
 angularspeed=calibrate()
-speak("3 60 no scope, boom headshot")
+speak("3 60 no scope")
 while (1):
   move()
