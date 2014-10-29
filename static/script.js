@@ -3,9 +3,19 @@ var socket = io.connect();
 window.addEventListener("load", function() {
 	var log = document.getElementById("log");
 	var maxChats = 100;
-  
+
   var previous = [];
   var current = 0;
+
+	var getRandUsername = function(){
+		var list_A = ["Anonymous","Quirky","Kinky","Funny","Ignorant","Fail","Frustrated","Smart","Active","Undefined"]
+		var list_B = ["Steven","Yu Chen","Zombie","Andrew","Dave","Alyshan","Ruo Tai","Jacklope",
+		"Eleplant","Giraffe","Bravo","Lollipop","KitKat","Jellybean","Dolphin","Whale","Hasselhoff","Voyeur","Beetle","Lion","NaN","Pointer"]
+
+		return list_A[Math.floor(Math.random() * list_A.length)] + " " + list_B[Math.floor(Math.random() * list_B.length)];
+	};
+	//get a spiffy username
+	document.getElementById("username").value = getRandUsername();
 
 	var sendMessage = function() {
 		socket.emit('command', {
@@ -45,7 +55,7 @@ window.addEventListener("load", function() {
 		var t = document.createElement("div");
 		t.className = "text";
 		t.innerHTML = command.message;
-		
+
 
 		var u = document.createElement("div");
 		u.className="user";
