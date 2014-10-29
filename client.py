@@ -7,10 +7,10 @@ from cv2 import *
 logging.basicConfig(level=logging.WARNING)
 from socketIO_client import SocketIO
 
-dev = False
+dev = True
 
 if (not dev):
-  from myro import *
+  #from myro import *
   init("/dev/rfcomm1")
 
 queue = []
