@@ -13,12 +13,12 @@ html, body {
 
 #video {
 	width: 512px;
-	height: 384px;
+	height: 192px;
 	position:absolute;
   left:50%;
   top:50%;
   margin-left:-256px;
-  margin-top:-142px;
+  margin-top:-46px;
   background-color:#EEE;
 	display:block;
 }

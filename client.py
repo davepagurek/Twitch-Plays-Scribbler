@@ -2,27 +2,22 @@ import logging
 import json
 import threading
 import sched, time
-#import pygame.camera
-#import pygame.image
-#from SimpleCV import Image, Camera
 from cv2 import *
 #import song
 logging.basicConfig(level=logging.WARNING)
 from socketIO_client import SocketIO
 
-dev = True
+dev = False
 
 if (not dev):
-  #from myro import *
+  from myro import *
   init("/dev/rfcomm1")
 
 queue = []
 ready = True
 idle = True
 s = sched.scheduler(time.time, time.sleep)
-#pygame.camera.init()
-#cam = pygame.camera.Camera(pygame.camera.list_cameras()[0])
-#cam.start()
+
 
 
 with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
@@ -81,34 +76,24 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
   def webcam_photo():
     #global cam
     cam = VideoCapture(0)
+    cam.set(3,256)
+    cam.set(4,192)
+    namedWindow("cam-test",CV_WINDOW_AUTOSIZE)
     while (1):
-      time.sleep(2)
-      '''img = cam.getImage()
-      img.save("static/webcam.jpg")'''
-
       s, img = cam.read()
       print s
       if s:    # frame captured without any errors
-        namedWindow("cam-test",CV_WINDOW_AUTOSIZE)
+
         imshow("cam-test",img)
-        waitKey(0)
-        destroyWindow("cam-test")
-        imwrite("filename.jpg",img)
+        #time.sleep(2)
+        #destroyWindow("cam-test")
+        cv.SaveImage("static/webcam.jpg", cv.fromarray(img))
+        waitKey(2000)
 
       image_file = open("static/webcam.jpg", "rb")
       data = image_file.read()
       socket.emit("webcam", data.encode("base64"))
       image_file.close()
-
-      '''time.sleep(2)
-      if (cam.query_image()):
-        img = cam.get_image()
-        print img
-        pygame.image.save(img, "static/webcam.jpg")
-        image_file = open("static/webcam.jpg", "rb")
-        data = image_file.read()
-        socket.emit("webcam", data.encode("base64"))
-        image_file.close()'''
 
   def valid_command(command):
     if (command=="forward" or command=="backward" or command=="right" or command=="left" or command=="hasselhoff" or command=="beep"):
@@ -121,15 +106,18 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
     if (valid_command(args[0]["message"])):
       queue.append(args[0])
 
-  #pygame.camera.quit()
-
   executer = threading.Thread(target=start_executer, args = ())
   executer.daemon = True
   executer.start()
 
-  webcam = threading.Thread(target=webcam_photo, args = ())
-  webcam.daemon = True
-  webcam.start()
+  #webcam = threading.Thread(target=webcam_photo, args = ())
+  #webcam.daemon = True
+  #webcam.start()
 
   socket.on("command", on_command)
-  socket.wait()
+  socketer = threading.Thread(target=socket.wait, args = ())
+  socketer.daemon = True
+  socketer.start()
+
+  webcam_photo()
+

@@ -88,8 +88,15 @@ window.addEventListener("load", function() {
 		var image = new Image();
 		image.src = "data:image/png;base64," + photo;
 		image.onload = function() {
-      console.log(image);
-			context.drawImage(image, 0, 0, 512, 384);
+			context.drawImage(image, 0, 0, 256, 192);
+		};
+	});
+  socket.on("webcam", function(photo) {
+    console.log(photo);
+		var image = new Image();
+		image.src = "data:image/png;base64," + photo;
+		image.onload = function() {
+			context.drawImage(image, 256, 0, 256, 192);
 		};
 	});
 });

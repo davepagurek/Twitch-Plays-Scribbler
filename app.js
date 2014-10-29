@@ -9,6 +9,7 @@ io = io.listen(http.listen(process.env.PORT||3000, function(){
 io.settings.log = false;
 var commandQueue = [];
 var last_pic;
+var last_webcam;
 
 function parseCommand(msg){
     var command = msg.message.toLowerCase().split(" "); //split the message
@@ -65,6 +66,7 @@ app.get('/port', function(req, res){
 io.sockets.on('connection', function(socket){
     //emit last photo if any
     io.sockets.emit('photo', last_pic);
+  io.sockets.emit('webcam', last_webcam);
     console.log('a user connected');
 
     io.emit('command',{username:"Server",message:'listening on port '+ process.env.PORT});
@@ -78,6 +80,11 @@ io.sockets.on('connection', function(socket){
         console.log("Photo updated");
         io.sockets.emit('photo', msg);
         last_pic = msg;
+    });
+    socket.on('webcam', function(msg){
+        console.log("Webcam updated");
+        io.sockets.emit('webcam', msg);
+        last_webcam = msg;
     });
     socket.on('selected', function(msg){
         io.sockets.emit('selected', msg);
