@@ -97,6 +97,7 @@ h1 {
 	color:#FFF;
 	line-height:60px;
 	font-weight:lighter;
+  font-size:35px;
 }
 
 textarea, input {
@@ -123,6 +124,30 @@ textarea, input {
 .selected {
   font-style: italic;
   color:#b11515;
+}
+
+@media all and (max-width:800px) {
+  #sidebar {
+    position: relative;
+    width:auto;
+    height: 600px;
+  }
+  #main {
+    margin:0;
+    height: auto;
+  }
+  #video {
+    position:static;
+    width:90%;
+    height:auto;
+    margin:5%;
+  }
+}
+
+@media all and (max-width:500px) {
+  h1 {
+    font-size:25px;
+  }
 }
 
 .animated {
