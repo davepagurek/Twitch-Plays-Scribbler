@@ -10,9 +10,9 @@ window.addEventListener("load", function() {
 	var getRandUsername = function(){
 		var list_A = ["Anonymous","Quirky","Kinky","Funny","Ignorant","Fail","Frustrated","Smart","Active","Undefined"]
 		var list_B = ["Steven","Yu Chen","Zombie","Andrew","Dave","Alyshan","Ruo Tai","Jacklope",
-		"Eleplant","Giraffe","Bravo","Lollipop","KitKat","Jellybean","Dolphin","Whales","Hasselhoff","Voyeur","Beetle","Lion","NaN","Pointer"]
+		"Eleplant","Giraffe","Bravo","Lollipop","KitKat","Jellybean","Dolphin","Whale","Hasselhoff","Voyeur","Beetle","Lion","NaN","Pointer"]
 
-		return list_A[Math.floor(Math.random() * list_A.length)+1] + " " + list_B[Math.floor(Math.random() * list_B.length)+1];
+		return list_A[Math.floor(Math.random() * list_A.length)] + " " + list_B[Math.floor(Math.random() * list_B.length)];
 	};
 	//get a spiffy username
 	document.getElementById("username").value = getRandUsername();
