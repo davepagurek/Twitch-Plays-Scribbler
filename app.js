@@ -67,7 +67,7 @@ io.sockets.on('connection', function(socket){
   online++;
   io.sockets.emit('command', {
     "username": "",
-    "message": "" + online + " user" + (online==1?"":"s") + " connected";
+    "message": "" + online + " user" + (online==1?"":"s") + " connected"
   });
     //emit last photo if any
     io.sockets.emit('photo', last_pic);
