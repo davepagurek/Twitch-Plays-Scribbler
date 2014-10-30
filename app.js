@@ -62,8 +62,13 @@ app.get('/port', function(req, res){
 /*http.listen(process.env.PORT||3000, function(){
   console.log('listening on port '+ process.env.PORT||3000);
 });*/
-
+var online = 0;
 io.sockets.on('connection', function(socket){
+  online++;
+  io.sockets.emit('command', {
+    "username": "",
+    "message": "" + online + " user" + (online==1?"":"s") + " connected";
+  });
     //emit last photo if any
     io.sockets.emit('photo', last_pic);
   io.sockets.emit('webcam', last_webcam);
@@ -89,4 +94,10 @@ io.sockets.on('connection', function(socket){
     socket.on('selected', function(msg){
         io.sockets.emit('selected', msg);
     });
+    socket.on('disconnect', function () {
+
+      socket.emit('disconnected');
+      online = online - 1;
+
+  });
 });
