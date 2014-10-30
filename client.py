@@ -2,15 +2,15 @@ import logging
 import json
 import threading
 import sched, time
-from cv2 import *
+#from cv2 import *
 #import song
 logging.basicConfig(level=logging.WARNING)
 from socketIO_client import SocketIO
 
-dev = True
+robot = True
 
-if (not dev):
-  #from myro import *
+if (robot):
+  from myro import *
   init("/dev/rfcomm1")
 
 queue = []
@@ -43,7 +43,7 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
       queue = []
       command = selected["message"]
       username = selected["username"]
-      if (dev):
+      if (not robot):
         time.sleep(2)
       else:
         if(command=="forward"):
@@ -65,7 +65,7 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
       ready = True
 
   def take_photo():
-    if (not dev):
+    if (robot):
       picture = takePicture("color")
       savePicture(picture, "static/stream.jpg")
     image_file = open("static/stream.jpg", "rb")
@@ -106,9 +106,10 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
     if (valid_command(args[0]["message"])):
       queue.append(args[0])
 
-  executer = threading.Thread(target=start_executer, args = ())
-  executer.daemon = True
-  executer.start()
+  if (robot):
+    executer = threading.Thread(target=start_executer, args = ())
+    executer.daemon = True
+    executer.start()
 
   #webcam = threading.Thread(target=webcam_photo, args = ())
   #webcam.daemon = True
@@ -119,5 +120,6 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
   socketer.daemon = True
   socketer.start()
 
-  webcam_photo()
+  if (not robot):
+    webcam_photo()
 
