@@ -60,6 +60,7 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
           speak("Im hooked on a feeling")
           playsampledictionary.playHookedOnAFeeling()
 
+      print "this is how we do"
       take_photo()
       socket.emit("selected", {'username': username, 'message': command})
       #time.sleep(2)
@@ -116,10 +117,11 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
   webcam.start()
 
   socket.on("command", on_command)
-  socketer = threading.Thread(target=socket.wait, args = ())
-  socket.wait()
-  socketer.daemon = True
-  socketer.start()
+  #socketer = threading.Thread(target=socket.wait, args = ())
+  #socketer.daemon = True
+  #socketer.start()
+  while 1:
+      socket.wait()
 
   #if (not robot):
   #webcam_photo()

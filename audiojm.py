@@ -1,4 +1,4 @@
-from Myro import *
+from myro import *
 class audiojm():
     B0  = 31
     C1  = 33
