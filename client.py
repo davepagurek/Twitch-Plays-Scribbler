@@ -2,16 +2,16 @@ import logging
 import json
 import threading
 import sched, time
-#from cv2 import *
-#import song
-logging.basicConfig(level=logging.WARNING)
+from cv2 import *
+import playsampledictionary
+logging.basicConfig(level=logging.ERROR)
 from socketIO_client import SocketIO
 
 robot = True
 
 if (robot):
   from myro import *
-  init("/dev/rfcomm1")
+  init("/dev/rfcomm0")
 
 queue = []
 ready = True
@@ -58,6 +58,7 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
           song()
         elif(command=="hasselhoff"):
           speak("Im hooked on a feeling")
+          playsampledictionary.playHookedOnAFeeling()
 
       take_photo()
       socket.emit("selected", {'username': username, 'message': command})
@@ -74,21 +75,20 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
     image_file.close()
 
   def webcam_photo():
-    #global cam
+    global cam
     cam = VideoCapture(0)
     cam.set(3,256)
     cam.set(4,192)
     namedWindow("cam-test",CV_WINDOW_AUTOSIZE)
     while (1):
       s, img = cam.read()
-      print s
       if s:    # frame captured without any errors
 
         imshow("cam-test",img)
         #time.sleep(2)
         #destroyWindow("cam-test")
         cv.SaveImage("static/webcam.jpg", cv.fromarray(img))
-        waitKey(2000)
+        waitKey(42)
 
       image_file = open("static/webcam.jpg", "rb")
       data = image_file.read()
@@ -111,15 +111,15 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
     executer.daemon = True
     executer.start()
 
-  #webcam = threading.Thread(target=webcam_photo, args = ())
-  #webcam.daemon = True
-  #webcam.start()
+  webcam = threading.Thread(target=webcam_photo, args = ())
+  webcam.daemon = True
+  webcam.start()
 
   socket.on("command", on_command)
   socketer = threading.Thread(target=socket.wait, args = ())
+  socket.wait()
   socketer.daemon = True
   socketer.start()
 
-  if (not robot):
-    webcam_photo()
-
+  #if (not robot):
+  #webcam_photo()
