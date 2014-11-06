@@ -1,4 +1,4 @@
-from myro import *
+from Myro import *
 class audiojm():
     B0  = 31
     C1  = 33
@@ -94,7 +94,8 @@ class audiojm():
         self.duration=duration
     def playNote(self,note):
         beep(0.1,note)
-    def playNoteDictionary(self,melody, harmony):
+    def playNoteDictionary(self, melody, harmony):
+        arpeggiate = False
         currentMelody = None
         currentHarmony = None
         arpLength = 0.1
@@ -113,13 +114,16 @@ class audiojm():
                 length = min(currentMelody.duration-currentMelody.played, currentHarmony.duration-currentHarmony.played)
                 currentMelody.played += length
                 currentHarmony.played += length
-                x = 0
-                while (x*arpLength<length):
-                    x += 1
-                    if (x % 2 == 0):
-                        beep(arpLength,currentMelody.note)
-                    else:
-                        beep(arpLength,currentHarmony.note)
+                if (arpeggiate):
+                    x = 0
+                    while (x*arpLength<length):
+                        x += 1
+                        if (x % 2 == 0):
+                            beep(arpLength,currentMelody.note)
+                        else:
+                            beep(arpLength,currentHarmony.note)
+                elif (length>0.0001):
+                    beep(length, currentMelody.note, currentHarmony.note)
 
 class Note():
     def __init__(self, duration,note):
