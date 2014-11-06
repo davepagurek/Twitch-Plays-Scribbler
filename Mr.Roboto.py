@@ -2,8 +2,8 @@ from myro import *
 import math
 from Vector import *
 from calibration import *
-init("/dev/rfcomm1")
-threshold=660 #Threshold for sensor to confirm obstacle
+init("/dev/rfcomm0")
+threshold= 630 #Threshold for sensor to confirm obstacle
 sensordata=[0,0,0] #Holds sensor data for obstacles (Left, Right)
 angularspeed=360 #Need to set to calibrated angular speed, value should be degrees/second
 deviation = Vector(0,0) #Net vector of all the deviations
@@ -55,8 +55,7 @@ def isData():
 #tells the robot what type of obstacle avoidance to use (perpendicular or angled)
 def set_state():
     temp = input("Enter Mode. 1 for perpendicular. 2 for angled")
-    if(not(temp == "1" or temp == "2")) return 0
-    return temp
+    return int(temp)
 
 #returns true if sensors detect an object greater than a threshold
 def isObject():
@@ -93,51 +92,19 @@ def getData():
   a=0
   b=0
   c=0
-  for x in range (3):
+  quantity=3
+  for x in range (quantity):
     a+=getObstacle("left")
     b+=getObstacle("right")
     c+=getObstacle("center")
-  sensordata[0]=a/3
-  sensordata[1]=b/3
-  sensordata[2]=c/3
+  sensordata[0]=a/quantity
+  sensordata[1]=b/quantity
+  sensordata[2]=c/quantity
 
 #makes the bot face a clear path
 def directBot():
   global direction
   global state
-  #global perpendicular
-  # #gets a bit closer to sense object better
-  # forward(forwardspeed, 0.3)
-  # perpendicular = True
-  # turnLeft(turnspeed, 90/angularspeed)
-  # if (isObject()):
-  #   perpendicular = False
-  #   turnRight(turnspeed, 90/angularspeed)
-  # else:
-  #   forward(forwardspeed, 0.5)
-  #   turnRight(turnspeed, 90/angularspeed)
-  #   if not (isObject()):
-  #     perpendicular = False
-  #     turnRight(turnspeed, 90/angularspeed)
-  #     forward(forwardspeed, 0.5)
-  #     turnLeft(turnspeed, 90/angularspeed)
-  #   else:
-  #     turnRight(turnspeed, 90/angularspeed)
-  #     forward(forwardspeed, 0.5)
-  #     if (isObject()):
-  #       perpendicular = False
-  #       turnLeft(turnspeed, 90/angularspeed)
-  #     else:
-  #       forward(forwardspeed, 0.5)
-  #       turnLeft(turnspeed, 90/angularspeed)
-  #       if not (isObject()):
-  #         perpendicular = False
-  #       turnLeft(turnspeed, 90/angularspeed)
-  #       forward(forwardspeed, 0.5)
-  #       turnRight(turnspeed, 90/angularspeed)
-  #else:
-#      forward(forwardspeed, 0.3)
-
   #Perpendicular direction
   if (state == 1):
     if (direction):
@@ -180,9 +147,6 @@ def clearObs():
   global direction
   print "clearing obstacle"
   cleared = False
-  #move forward in case too far from obstacle
-  forward(forwardspeed, 1.0)
-  app_vector.magnitude += 1.0
   #move forward while check to clear obstacle
   while (not cleared):
     forward(forwardspeed,forwardvalue)
@@ -211,16 +175,14 @@ def clearObs():
 def revert():
   global direction
   global state
+  print "doing revert"
   #set deviation vector to the complimentary angle
   if app_vector.angle>0:
     deviation.angle = 90 - app_vector.angle
   else:
     deviation.angle = - 90 - app_vector.angle
   #set deviation vector to the corresponding magnitude
-  if (state == 1):
-    deviation.magnitude = app_vector.magnitude
-  else:
-    deviation.magnitude = math.fabs(app_vector.magnitude*math.cos((deviation.angle/180)*math.pi)/math.cos((app_vector.angle/180)*math.pi))
+  deviation.magnitude = math.fabs(app_vector.magnitude*math.cos((deviation.angle/180)*math.pi)/math.cos((app_vector.angle/180)*math.pi))
   #turn to deviation angle
   if deviation.angle>0:
     turnLeft(turnspeed, deviation.angle/angularspeed)
@@ -242,6 +204,7 @@ def revert():
 def moveL():
   global direction
   cleared = False
+  print "doing moveL"
   #move forward in case box is too far
   forward(forwardspeed, 2)
   #move forward until box is cleared
@@ -277,20 +240,30 @@ def moveL():
 #main loop of function to run bot
 def move():
   global direction
+  global state
   if(isObject()):
-    whatDir()
+    if(state == 1):
+        forward(forwardspeed, 0.8)
+    #whatDir()
+    if (state == 2):
+        direction = True
+    if (state == 3):
+        direction = False
     print direction
     directBot()
     clearObs()
     print app_vector.angle
-    if (app_vector.angle > 80.0 or app_vector.angle < -80.0):
+    if (state == 1):
         moveL()
     else:
         revert()
+    forward(1.0, 2.0)
+    state = set_state()
   else:
-    forward(1, 0.25)
+    forward(1)
 
 angularspeed=calibrate()
 state = set_state()
+print "angularspeed",angularspeed
 while (1):
   move()

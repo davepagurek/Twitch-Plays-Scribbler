@@ -157,6 +157,7 @@ class Robot():
 
 	def moveRight(time):
 angularspeed=calibrate()
+print "angular speed:",angularspeed
 
 while (1):
   moveone()
