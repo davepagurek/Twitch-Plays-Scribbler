@@ -82,7 +82,7 @@ window.addEventListener("load", function() {
 
 		var t = document.createElement("div");
 		t.className = "selected";
-		t.innerHTML = "Moved " + command.message + " , thanks to " + command.username;
+		t.innerHTML = "Moved " + command.message + ", thanks to " + command.username;
 
 		m.appendChild(t);
 
@@ -97,7 +97,6 @@ window.addEventListener("load", function() {
 	//256x192, scaled x3
 	var context = document.getElementById("video").getContext("2d");
 	socket.on("photo", function(photo) {
-    console.log(photo);
 		var image = new Image();
 		image.src = "data:image/png;base64," + photo;
 		image.onload = function() {
@@ -105,7 +104,6 @@ window.addEventListener("load", function() {
 		};
 	});
   socket.on("webcam", function(photo) {
-    console.log(photo);
 		var image = new Image();
 		image.src = "data:image/png;base64," + photo;
 		image.onload = function() {
