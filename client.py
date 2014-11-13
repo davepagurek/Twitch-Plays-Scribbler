@@ -47,19 +47,19 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
       selected = queue.pop(snum)
       print selected, "selected command\n"
       queue = []
-      command = selected["message"]
+      command = selected["message"].lower()
       username = selected["username"]
       if (not robot):
         time.sleep(2)
       else:
-        if(command=="forward"):
+        if(command=="forward" or command=="straight"):
           forward(1,1)
-        elif(command=="backward"):
+      elif(command=="backward" or command=="back"):
           backward(1,1)
         elif(command=="right"):
-          turnRight(1,1)
+          turnRight(1,0.5)
         elif(command=="left"):
-          turnLeft(1,1)
+          turnLeft(1,0.5)
         elif(command=="beep"):
           song()
         elif(command=="hasselhoff"):
