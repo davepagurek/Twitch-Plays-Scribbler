@@ -6,7 +6,8 @@ from cv2 import *
 import playsampledictionary
 logging.basicConfig(level=logging.ERROR)
 from socketIO_client import SocketIO
-
+import pdb
+import random
 robot = True
 
 if (robot):
@@ -39,7 +40,12 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
     if len(queue)>0:
       ready = False
       idle = False
-      selected = queue.pop(0)
+      print queue ," queue"
+      print "Length of queue",len(queue),"\n"
+      snum=random.randint(0,len(queue)-1);
+      print snum," selected number\n"
+      selected = queue.pop(snum)
+      print selected, "selected command\n"
       queue = []
       command = selected["message"]
       username = selected["username"]
@@ -57,10 +63,7 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
         elif(command=="beep"):
           song()
         elif(command=="hasselhoff"):
-          speak("Im hooked on a feeling")
           playsampledictionary.playHookedOnAFeeling()
-
-      print "this is how we do"
       take_photo()
       socket.emit("selected", {'username': username, 'message': command})
       #time.sleep(2)
@@ -68,11 +71,15 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
 
   def take_photo():
     if (robot):
+      print ("enter if")
       picture = takePicture("color")
       savePicture(picture, "static/stream.jpg")
     image_file = open("static/stream.jpg", "rb")
+    print ("opened image file")
     data = image_file.read()
+    print ("read image file")
     socket.emit("photo", data.encode("base64"))
+    print ("emit photo")
     image_file.close()
 
   def webcam_photo():
@@ -120,8 +127,7 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
   #socketer = threading.Thread(target=socket.wait, args = ())
   #socketer.daemon = True
   #socketer.start()
-  while 1:
-      socket.wait()
+  socket.wait()
 
   #if (not robot):
   #webcam_photo()

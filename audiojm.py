@@ -123,7 +123,8 @@ class audiojm():
                         else:
                             beep(arpLength,currentHarmony.note)
                 elif (length>0.0001):
-                    beep(length, currentMelody.note, currentHarmony.note)
+                    #print(currentMelody.note, " ", currentHarmony.note)
+                    beep(length, currentMelody.note*2, currentHarmony.note*2)
 
 class Note():
     def __init__(self, duration,note):
