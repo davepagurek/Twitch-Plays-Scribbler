@@ -18,7 +18,7 @@ window.addEventListener("load", function() {
 	document.getElementById("username").value = getRandUsername();
 
 	var sendMessage = function() {
-		if (document.getElementById("message").value.replace(/\n$/, "")=="") {
+		if (document.getElementById("message").value.replace(/(\n|\w)$/, "")=="") {
 			return;
 		}
 		socket.emit('command', {
