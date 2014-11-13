@@ -54,7 +54,7 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
       else:
         if(command=="forward" or command=="straight"):
           forward(1,1)
-      elif(command=="backward" or command=="back"):
+        elif(command=="backward" or command=="back"):
           backward(1,1)
         elif(command=="right"):
           turnRight(1,0.5)
