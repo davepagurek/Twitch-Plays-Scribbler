@@ -18,6 +18,9 @@ window.addEventListener("load", function() {
 	document.getElementById("username").value = getRandUsername();
 
 	var sendMessage = function() {
+		if (document.getElementById("message").value.replace(/\n$/, "")=="") {
+			return;
+		}
 		socket.emit('command', {
 			"message": document.getElementById("message").value.replace(/\n$/, ""),
 			"username": document.getElementById("username").value
