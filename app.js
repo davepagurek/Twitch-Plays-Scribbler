@@ -14,7 +14,7 @@ var last_webcam;
 function parseCommand(msg){
     var command = msg.message.toLowerCase().split(" "); //split the message
     var operator = command[0]; //First word of the command
-    switch(msg.operator.toLowerCase()){
+    switch(operator.toLowerCase()){
             case "forward":
               io.sockets.emit('hasselhoff', {'message':"forward",'username':msg.username});
 
