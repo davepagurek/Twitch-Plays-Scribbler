@@ -44,6 +44,7 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
       selected = queue.pop(snum)
       queue = []
       command = selected["message"].lower()
+      print command
       username = selected["username"]
       if (not robot):
         time.sleep(2)
@@ -56,10 +57,12 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
           turnRight(1,0.5)
         elif(command=="left"):
           turnLeft(1,0.5)
-        elif(command=="beep"):
-          song()
+        elif(command=="spin"):
+           turnRight(1,3)
         elif(command=="hasselhoff"):
           playsampledictionary.playHookedOnAFeeling()
+        elif(command=="beep"):
+          beep(1,440*5)
       take_photo()
       socket.emit("selected", {'username': username, 'message': command})
       #time.sleep(2)
@@ -96,7 +99,17 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
       image_file.close()
 
   def valid_command(command):
-    if (command=="forward" or command=="backward" or command=="right" or command=="left" or command=="hasselhoff" or command=="beep"):
+    command = command.lower()
+    if (command=="forward" \
+    or command=="backward" \
+    or command =="straight" \
+    or command =="back" \
+    or command =="spin" \
+    or command=="right" \
+    or command=="left" \
+    or command =="spin" \
+    or command=="hasselhoff" \
+    or command=="beep"):
       return True
     else:
       return False

@@ -78,7 +78,7 @@ io.sockets.on('connection', function(socket){
     socket.on('command', function(msg){
         console.log(msg);
 
-        parseCommand(msg);
+        //parseCommand(msg);
         io.sockets.emit('command', msg);
     });
     socket.on('photo', function(msg){
