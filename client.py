@@ -40,12 +40,8 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
     if len(queue)>0:
       ready = False
       idle = False
-      print queue ," queue"
-      print "Length of queue",len(queue),"\n"
       snum=random.randint(0,len(queue)-1);
-      print snum," selected number\n"
       selected = queue.pop(snum)
-      print selected, "selected command\n"
       queue = []
       command = selected["message"].lower()
       username = selected["username"]
@@ -71,15 +67,11 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
 
   def take_photo():
     if (robot):
-      print ("enter if")
       picture = takePicture("color")
       savePicture(picture, "static/stream.jpg")
     image_file = open("static/stream.jpg", "rb")
-    print ("opened image file")
     data = image_file.read()
-    print ("read image file")
     socket.emit("photo", data.encode("base64"))
-    print ("emit photo")
     image_file.close()
 
   def webcam_photo():
@@ -96,7 +88,7 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
         #time.sleep(2)
         #destroyWindow("cam-test")
         cv.SaveImage("static/webcam.jpg", cv.fromarray(img))
-        waitKey(42)
+        waitKey(200)
 
       image_file = open("static/webcam.jpg", "rb")
       data = image_file.read()
