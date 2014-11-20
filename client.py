@@ -8,6 +8,7 @@ logging.basicConfig(level=logging.ERROR)
 from socketIO_client import SocketIO
 import pdb
 import random
+import song
 robot = True
 
 if (robot):
@@ -63,6 +64,8 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
           playsampledictionary.playHookedOnAFeeling()
         elif(command=="beep"):
           beep(1,440*5)
+        elif(command=="birthday"):
+          song.song()
       take_photo()
       socket.emit("selected", {'username': username, 'message': command})
       #time.sleep(2)
@@ -109,7 +112,8 @@ with SocketIO("scribblerplaystwitch.herokuapp.com") as socket:
     or command=="left" \
     or command =="spin" \
     or command=="hasselhoff" \
-    or command=="beep"):
+    or command=="beep")\
+    or command=="birthday":
       return True
     else:
       return False
