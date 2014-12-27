@@ -3,4 +3,4 @@ JMBot
 
 SE 101 Robot Project
 
-Don't ask about the name
+A crowd controlled robot using Python, Nodejs and a ScribblerBot, inspired by Twitch Plays Pokemon
